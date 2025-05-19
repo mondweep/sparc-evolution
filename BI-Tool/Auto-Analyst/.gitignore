@@ -1,0 +1,30 @@
+# Ignore Terraform state and cache files
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.tfvars
+
+try*
+
+*.db
+
+# Files with hardcoded API keys
+test_model_connection.py
+test_gemini.py
+*_api_key*.py
+*.env
+.env*
+credentials.json
+*_credentials.*
+
+# Ignore files with API keys
+*_api_key*.py
+*api*.sh
+*.env
+test_model_settings.py
+restart_with_api.sh
+run_app.sh
+auto-analyst-backend/archive/simple_app.py.bak
+temp.env
+simple_test.py
