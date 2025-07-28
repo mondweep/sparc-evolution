@@ -1,0 +1,153 @@
+# **Product Requirements Document: rUv-swarm Interactive Course Platform**
+
+| Document Version | 2.0 |
+| :---- | :---- |
+| **Status** | Revised Draft |
+| **Author** | Gemini |
+| **Date** | July 28, 2025 |
+
+### **1\. Introduction & Vision**
+
+1.1. Vision  
+To create the definitive, hands-on learning platform for engineering ephemeral intelligence. This course will teach learners how to instantiate, orchestrate, and deploy swarms of lightweight, temporary neural networks using the cutting-edge rUv-swarm framework. The platform will blend theory with interactive labs, taking learners from foundational concepts to architecting complex, distributed cognitive systems.  
+1.2. Problem & Opportunity  
+Modern AI is dominated by monolithic, large language models (LLMs). rUv-swarm presents a paradigm shift: creating tiny, purpose-built "brains" in Rust that are compiled to WebAssembly, exist just long enough to solve a specific problem, and are orchestrated via code. There is a significant educational gap in teaching this nimble, CPU-native, and highly performant approach to AI. This course will be the first of its kind to fill that gap.  
+1.3. Scope  
+This PRD covers the requirements for a web-based learning platform that will host a three-tiered course on rUv-swarm. It focuses on the Rust, WebAssembly, and Claude-driven ecosystem.
+
+### **2\. Target Audience**
+
+1. **The Foundational Learner:** Developers and students with some programming background. They are new to Rust and WebAssembly but are fascinated by novel AI architectures beyond traditional LLMs.  
+2. **The Practitioner:** AI/ML engineers and data scientists who want to leverage high-performance, CPU-native intelligence. They want to master the orchestration of rUv-swarm agents to solve complex problems (e.g., coding, analysis, trading) without GPU dependencies.  
+3. **The Architect:** Senior engineers, systems designers, and researchers interested in the frontiers of distributed AI. They want to understand how to design custom agent topologies, create new cognitive specializations, and integrate rUv-swarm into edge computing, low-power devices, or complex, real-time systems.
+
+### **3\. Goals & Success Metrics**
+
+| Goal | Success Metrics |
+| :---- | :---- |
+| **Mastery of Ephemeral Intelligence** | \- High average scores (\>85%) on quizzes and assessments.\<br\>- High completion rates (\>70%) for interactive labs. |
+| **Engage with Real-World Tooling** | \- High engagement with the interactive terminal and orchestration editor.\<br\>- Qualitative feedback praising the hands-on experience with npx and Claude code. |
+| **Build a Robust, Functional Website** | \- Uptime \> 99.9%.\<br\>- Page load times \< 2 seconds.\<br\>- Interactive lab execution time \< 15 seconds. |
+| **Ensure Content is Portable** | \- A clear export function allows an admin to download all course content (Markdown, lab configurations, quiz questions) in a structured JSON file for easy porting to Disco.co. |
+
+### **4\. Features & Requirements**
+
+#### **4.1. User-Facing Features**
+
+* **F1: User Authentication & Profile**  
+  * Users can sign up and log in using an email and password.  
+  * A simple user profile page shows their name and course progress.  
+* **F2: Course Dashboard**  
+  * Displays the three course levels: Foundations, Practitioner, Architect.  
+  * Clearly visualizes the user's progress through each module and lesson (e.g., completion checkmarks, progress bars).  
+  * Provides quick links to resume the last-viewed lesson.  
+* **F3: Interactive Lesson View**  
+  * **Content Display:** Renders lesson text, which will be authored in Markdown. Supports code blocks with syntax highlighting, images, diagrams (e.g., using Mermaid.js), and mathematical formulas (LaTeX).  
+  * **Navigation:** Easy navigation between lessons and modules (Next/Previous buttons, sidebar).  
+  * **Interactive C Code Editor:**  
+    * An in-browser text editor (e.g., Monaco Editor) where users can view, edit, and run C code.  
+    * A "Run" button that sends the code to the backend, compiles it (with FANN library linked), executes it, and displays the stdout/stderr output.  
+    * Pre-populated with code for specific exercises.  
+    * A "Reset" button to revert the code to the original state for the exercise.  
+  * **Interactive Quizzes:**  
+    * Multiple choice, true/false, and "fill-in-the-blank" style questions.  
+    * Instant feedback on submission.  
+    * Scores are saved to track user progress.  
+* **F4: Project Labs**  
+  * Special lessons that outline a larger task (e.g., "Train the network on a new dataset").  
+  * Users can use the interactive editor to complete the lab. For more complex tasks, they might be instructed to download the codebase and run it locally.  
+  * A simple "Mark as Complete" button for tracking.
+
+#### **4.2. Admin & Content Authoring Features**
+
+* **F5: Content Management System (CMS)**  
+  * A secure admin interface to create, edit, and delete courses, modules, and lessons.  
+  * A WYSIWYG or Markdown editor for lesson content.  
+  * An interface to create quizzes and define correct answers.  
+  * Ability to specify the boilerplate code for the interactive C code editor for each lesson.  
+* **F6: Content Export**  
+  * A feature to export all course content (lessons, quizzes, etc.) as a structured JSON file or a collection of Markdown files. This is critical for portability to Disco.co or other platforms.
+
+### **5\. The Course Curriculum (Content Structure)**
+
+This section outlines the content itself. Storing it this way in the database will make it portable.
+
+#### **Level 1: Foundations**
+
+* **Goal:** Understand *what* rUv-swarm does and the high-level concepts behind it.  
+* **Modules:**  
+  1. **Introduction to Neural Networks:** What is a neuron? An activation function? A network layer? (Theory)  
+  2. **The "Hello World" of NNs: The XOR Problem:** Why XOR is a classic test case for non-linear separability. (Theory & data/xor.data exploration)  
+  3. **Introduction to Swarm Intelligence:** The "wisdom of the crowd." How simple agent interactions can lead to complex problem-solving. (Theory)  
+  4. **Meet Particle Swarm Optimization (PSO):** The core concepts of particles, velocity, position, gbest, and pbest. (Theory)  
+  5. **Hands-On: Running rUv-swarm:**  
+     * Compiling the project from source (make).  
+     * Running the executable with default parameters.  
+     * Understanding the command-line output: Epochs, Best Error. (Interactive Lab)  
+     * **Quiz:** Test understanding of basic terms.
+
+#### **Level 2: Practitioner**
+
+* **Goal:** Understand *how* the rUv-swarm code works internally and be able to modify it.  
+* **Modules:**  
+  1. **Deep Dive: The FANN Library:**  
+     * How to create an ANN in C using fann\_create\_standard.  
+     * How to set activation functions with fann\_set\_activation\_function\_hidden.  
+     * Training and testing functions. (Theory & Interactive Code Editor with simple FANN examples)  
+  2. **Code Walkthrough: fann\_utils.c:**  
+     * Analyzing the train\_network and test\_network functions in the repo. How does the code wrap FANN? (Code Analysis)  
+  3. **Deep Dive: The PSO Engine (pso.c):**  
+     * Analyzing the pso\_init, pso\_evolve, and pso\_done functions.  
+     * Understanding the PSO parameters: w (inertia), c1 (cognitive), c2 (social). (Code Analysis)  
+  4. **Connecting the Dots:** How does main.c use the PSO engine to "steer" the FANN training process? The fitness function is the key\! (Architecture Theory)  
+  5. **Hands-On Lab: Hyperparameter Tuning:**  
+     * Modify the PSO parameters in the code and observe the impact on training speed and final error. (Interactive Lab)  
+  6. **Hands-On Lab: A New Challenge:**  
+     * Adapt the code to use a different dataset (e.g., data/robot.data if available, or a simple custom one). This involves changing the network architecture defined in main.c. (Interactive Lab)  
+  7. **Quiz:** Test understanding of key functions and parameters.
+
+#### **Level 3: Architect**
+
+* **Goal:** Be able to *extend* the rUv-swarm system and apply its principles to new domains.  
+* **Modules:**  
+  1. **Beyond PSO:** A theoretical look at other population-based algorithms (e.g., Genetic Algorithms, Ant Colony Optimization) and how they could replace the PSO module. (Theory)  
+  2. **Software Design Patterns in Scientific Computing:** Discussing the modularity of rUv-swarm. How pso.c and fann\_utils.c are decoupled. (Architecture Theory)  
+  3. **Project Lab: Implementing a New Optimizer:**  
+     * Challenge: Stub out the functions for a simple Genetic Algorithm (ga\_init, ga\_evolve).  
+     * Task: Integrate this new (simplified) GA into main.c in place of the PSO. (Major Hands-on Lab)  
+  4. **Project Lab: Containerization & Deployment:**  
+     * Write a Dockerfile to package the rUv-swarm application.  
+     * Discuss how this enables reproducible research and easy deployment. (DevOps/MLOps Theory & Lab)  
+  5. **Final Project: Solving a Real-World Problem:**  
+     * Provide a new, more complex dataset (e.g., Iris or a simplified version).  
+     * The learner must architect a complete solution: adjust the NN topology, tune the optimizer, and write a short report on their findings. (Capstone Project)  
+  6. **Final Assessment:** A combination of conceptual questions about design trade-offs and a review of their final project.
+
+### **6\. Technical Stack & Architecture**
+
+* **Frontend:** React.js (Vite) with a component library like Chakra UI or Material-UI for rapid development.  
+* **Backend:** A lightweight Python framework like **FastAPI** or **Flask**. It's easy to learn and powerful enough for this scope.  
+* **Database:** **SQLite**, as requested. It will be a single file in the backend filesystem, which is simple to manage for this application's scale. The backend service will be the only process interacting with it.  
+* **Interactive Code Execution (The Hard Part):**  
+  * The backend will expose an API endpoint like /api/v1/execute.  
+  * When this endpoint receives C code, it will:  
+    1. Create a temporary, isolated directory.  
+    2. Write the user's C code to a .c file.  
+    3. Use a **secure sandbox** (e.g., a Docker container) to compile the code using gcc, linking against the libfann-dev library.  
+    4. Execute the compiled binary within the container, capturing stdout and stderr.  
+    5. Return the captured output as a JSON response.  
+    6. **Crucially, the container will have strict resource limits (CPU, memory, execution time) to prevent abuse.**  
+* **Portability by Design:** All course content (Markdown text, quiz questions/answers, lab instructions) will be stored in structured tables in the SQLite database. The "Export" feature will simply query this data and format it into a JSON file.
+
+### **7\. Non-Functional Requirements**
+
+* **Security:** Sanitize all user inputs. The code execution sandbox is the most critical security component and must be implemented carefully to prevent container escapes or server-side attacks.  
+* **Usability:** The interface must be clean, intuitive, and fully responsive for use on desktop and tablet devices.  
+* **Performance:** Lesson content should load instantly. Code execution should ideally complete within 5-10 seconds.
+
+### **8\. Future Scope / V2.0**
+
+* **Community Features:** A discussion forum or comment section for each lesson.  
+* **Leaderboards:** Gamify the experience with points for completing quizzes and labs.  
+* **More Courses:** Add courses for other interesting open-source AI/ML projects.  
+* **Certificate Generation:** Automatically generate a PDF certificate upon completion of a course tier.
