@@ -481,17 +481,17 @@ func main() {
     try {
       const response = await codeAPI.execute(code, selectedLanguage)
       
-      if (response.data.success) {
+      if (response.data.status === 'success') {
         setOutput(response.data.output || 'Code executed successfully')
         setExecutionStats({
-          executionTime: response.data.execution_time_ms,
-          memoryUsed: response.data.memory_used_kb
+          executionTime: response.data.execution_time * 1000, // Convert to ms
+          memoryUsed: 0 // Not available in current implementation
         })
         setHasError(false)
         
         toast({
           title: 'Code executed successfully',
-          description: `Executed in ${response.data.execution_time_ms}ms`,
+          description: `Executed in ${(response.data.execution_time * 1000).toFixed(2)}ms`,
           status: 'success',
           duration: 3000,
           isClosable: true,

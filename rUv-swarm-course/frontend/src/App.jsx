@@ -38,6 +38,7 @@ function App() {
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/favorites" element={<div>Favorites Page - Coming Soon</div>} />
         <Route path="/settings" element={<div>Settings Page - Coming Soon</div>} />
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </Layout>
   )

@@ -30,6 +30,9 @@ import useAppStore from '../../store/useAppStore'
 import { coursesAPI } from '../../services/api'
 
 const Dashboard = () => {
+  // Debug: Log that Dashboard is rendering
+  console.log('🟢 Dashboard component is rendering')
+  
   const navigate = useNavigate()
   const { 
     user, 
@@ -88,7 +91,19 @@ const Dashboard = () => {
   }
   
   const handleJoinSwarmLab = () => {
-    navigate('/swarm-lab')
+    console.log('🔥 Join Swarm Lab clicked - attempting navigation to /swarm-lab')
+    console.log('🔍 Navigate function:', navigate)
+    console.log('🔍 Current pathname:', window.location.pathname)
+    try {
+      navigate('/swarm-lab')
+      console.log('✅ Navigation attempted successfully')
+      // Check if navigation actually happened after a brief delay
+      setTimeout(() => {
+        console.log('🔍 New pathname after navigation:', window.location.pathname)
+      }, 100)
+    } catch (error) {
+      console.error('❌ Navigation error:', error)
+    }
   }
   
   const handleResumeLearning = () => {
@@ -249,7 +264,11 @@ const Dashboard = () => {
                     leftIcon={<FiUsers />} 
                     w="full" 
                     variant="outline"
-                    onClick={handleJoinSwarmLab}
+                    onClick={() => {
+                      alert('🚨 BUTTON CLICKED - Join Swarm Lab');
+                      console.log('🚨 BUTTON CLICKED - Join Swarm Lab');
+                      handleJoinSwarmLab();
+                    }}
                   >
                     Join Swarm Lab
                   </Button>

@@ -101,35 +101,35 @@ const useAppStore = create(
             ],
             lessons: [
               {
-                id: '1-1',
+                id: 1,
                 title: "What is rUv-Swarm?",
                 duration: "15 min",
                 type: "Video",
                 completed: false
               },
               {
-                id: '1-2',
+                id: 2,
                 title: "Setting up Your Environment",
                 duration: "20 min",
                 type: "Interactive",
                 completed: false
               },
               {
-                id: '1-3',
+                id: 3,
                 title: "Your First Swarm",
                 duration: "25 min",
                 type: "Coding",
                 completed: false
               },
               {
-                id: '1-4',
+                id: 4,
                 title: "Understanding Swarm Intelligence",
                 duration: "18 min",
                 type: "Video",
                 completed: false
               },
               {
-                id: '1-5',
+                id: 5,
                 title: "Coordination Patterns",
                 duration: "22 min",
                 type: "Interactive",
@@ -137,9 +137,9 @@ const useAppStore = create(
               }
             ],
             progress: {
-              '1-1': { completed: true, score: 95 },
-              '1-2': { completed: true, score: 88 },
-              '1-3': { completed: false, score: 0 }
+              1: { completed: true, score: 95 },
+              2: { completed: true, score: 88 },
+              3: { completed: false, score: 0 }
             },
             coursesLoaded: true
           }
