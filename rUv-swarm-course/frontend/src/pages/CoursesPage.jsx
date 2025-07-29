@@ -19,13 +19,14 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { coursesAPI } from '../services/api'
 import useAppStore from '../store/useAppStore'
 
 const CoursesPage = () => {
   const navigate = useNavigate()
+  const { courseId } = useParams()
   const { 
     courses, 
     setCourses, 
@@ -37,7 +38,8 @@ const CoursesPage = () => {
     setCurrentCourse, 
     progress,
     coursesLoaded,
-    initializeMockData
+    initializeMockData,
+    lessons
   } = useAppStore()
   
   const [apiError, setApiError] = useState(null)
@@ -97,6 +99,134 @@ const CoursesPage = () => {
         <VStack spacing="4">
           <Spinner size="xl" color="blue.500" thickness="4px" />
           <Text>Loading courses...</Text>
+        </VStack>
+      </Box>
+    )
+  }
+
+  // If courseId is present, show specific course details
+  if (courseId) {
+    const selectedCourse = courses.find(c => c.id.toString() === courseId)
+    
+    if (!selectedCourse) {
+      return (
+        <Box>
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            <AlertTitle>Course Not Found</AlertTitle>
+            <AlertDescription>
+              The course you're looking for doesn't exist.
+            </AlertDescription>
+          </Alert>
+          <Button mt="4" onClick={() => navigate('/courses')}>
+            Back to Courses
+          </Button>
+        </Box>
+      )
+    }
+
+    return (
+      <Box>
+        <VStack spacing="6" align="stretch">
+          <HStack>
+            <Button variant="ghost" onClick={() => navigate('/courses')}>
+              ← Back to Courses
+            </Button>
+          </HStack>
+          
+          <Card bg={cardBg} borderColor={borderColor}>
+            <CardHeader>
+              <VStack align="start" spacing="2">
+                <Badge colorScheme="blue" variant="subtle">
+                  {selectedCourse.difficulty?.toUpperCase()}
+                </Badge>
+                <Heading size="xl">{selectedCourse.title}</Heading>
+                <Text color="gray.600">{selectedCourse.description}</Text>
+              </VStack>
+            </CardHeader>
+            
+            <CardBody>
+              <VStack spacing="6" align="stretch">
+                <Grid templateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap="4">
+                  <Card variant="outline">
+                    <CardBody>
+                      <Text fontWeight="semibold">Duration</Text>
+                      <Text color="gray.600">{selectedCourse.duration}</Text>
+                    </CardBody>
+                  </Card>
+                  <Card variant="outline">
+                    <CardBody>
+                      <Text fontWeight="semibold">Lessons</Text>
+                      <Text color="gray.600">{selectedCourse.lessonCount} lessons</Text>
+                    </CardBody>
+                  </Card>
+                  <Card variant="outline">
+                    <CardBody>
+                      <Text fontWeight="semibold">Students</Text>
+                      <Text color="gray.600">{selectedCourse.studentCount?.toLocaleString()} enrolled</Text>
+                    </CardBody>
+                  </Card>
+                  <Card variant="outline">
+                    <CardBody>
+                      <Text fontWeight="semibold">Rating</Text>
+                      <Text color="gray.600">⭐ {selectedCourse.rating}/5.0</Text>
+                    </CardBody>
+                  </Card>
+                </Grid>
+
+                <Box>
+                  <Heading size="md" mb="4">Course Lessons</Heading>
+                  <VStack spacing="3" align="stretch">
+                    {lessons.map((lesson, index) => (
+                      <Card key={lesson.id} variant="outline">
+                        <CardBody>
+                          <HStack justify="space-between">
+                            <VStack align="start" spacing="1">
+                              <Text fontWeight="semibold">
+                                {index + 1}. {lesson.title}
+                              </Text>
+                              <Text fontSize="sm" color="gray.600">
+                                {lesson.duration} • {lesson.type}
+                              </Text>
+                            </VStack>
+                            <Button 
+                              size="sm" 
+                              colorScheme="blue"
+                              onClick={() => navigate(`/courses/${courseId}/lessons/${lesson.id}`)}
+                            >
+                              {lesson.completed ? 'Review' : 'Start'}
+                            </Button>
+                          </HStack>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </VStack>
+                </Box>
+
+                <HStack spacing="4">
+                  <Button 
+                    colorScheme="blue" 
+                    size="lg"
+                    onClick={() => {
+                      const firstLesson = lessons[0]
+                      if (firstLesson) {
+                        navigate(`/courses/${courseId}/lessons/${firstLesson.id}`)
+                      }
+                    }}
+                  >
+                    Start Course
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => navigate('/editor')}
+                  >
+                    Practice Code
+                  </Button>
+                </HStack>
+              </VStack>
+            </CardBody>
+          </Card>
         </VStack>
       </Box>
     )

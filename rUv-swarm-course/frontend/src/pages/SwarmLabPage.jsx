@@ -21,10 +21,38 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { FiUsers, FiActivity, FiZap, FiTrendingUp } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { useToast } from '@chakra-ui/react'
 
 const SwarmLabPage = () => {
+  const navigate = useNavigate()
+  const toast = useToast()
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('gray.200', 'gray.600')
+  
+  const handleJoinSwarm = (swarmId, swarmName) => {
+    toast({
+      title: 'Joining Swarm',
+      description: `Connecting you to ${swarmName}...`,
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    })
+    // In a real app, this would connect to the swarm
+    console.log(`Joining swarm ${swarmId}: ${swarmName}`)
+  }
+  
+  const handleCreateSwarm = () => {
+    toast({
+      title: 'Creating New Swarm',
+      description: 'Setting up your collaborative learning session...',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    })
+    // In a real app, this would open a create swarm dialog
+    console.log('Creating new swarm')
+  }
 
   const activeSwarms = [
     {
@@ -174,7 +202,11 @@ const SwarmLabPage = () => {
                     </GridItem>
                     
                     <GridItem>
-                      <Button colorScheme="blue" size="sm">
+                      <Button 
+                        colorScheme="blue" 
+                        size="sm"
+                        onClick={() => handleJoinSwarm(swarm.id, swarm.name)}
+                      >
                         Join Swarm
                       </Button>
                     </GridItem>
@@ -196,7 +228,11 @@ const SwarmLabPage = () => {
                 <Text color="gray.600">
                   Start a new collaborative learning session
                 </Text>
-                <Button colorScheme="green" leftIcon={<FiZap />}>
+                <Button 
+                  colorScheme="green" 
+                  leftIcon={<FiZap />}
+                  onClick={handleCreateSwarm}
+                >
                   Create Swarm
                 </Button>
               </VStack>
