@@ -3572,3 +3572,1562 @@ export const GeneticAlgorithmDemo = () => {
         </div>
     );
 };
+
+// Advanced Deep Learning Network Visualization - Practitioner Level
+export const AdvancedDeepNetworkVisualization = () => {
+    const svgRef = useRef();
+    const [layers, setLayers] = useState([4, 8, 6, 4, 2]);
+    const [learningRate, setLearningRate] = useState(0.01);
+    const [activationFunction, setActivationFunction] = useState('relu');
+    const [dropoutRate, setDropoutRate] = useState(0.2);
+    const [isTraining, setIsTraining] = useState(false);
+    const [epoch, setEpoch] = useState(0);
+    const [loss, setLoss] = useState(1.0);
+    const [accuracy, setAccuracy] = useState(0.5);
+    const [gradientFlow, setGradientFlow] = useState([]);
+    const [showGradients, setShowGradients] = useState(false);
+
+    const activationFunctions = {
+        relu: { fn: (x) => Math.max(0, x), color: '#3b82f6', derivative: (x) => x > 0 ? 1 : 0 },
+        sigmoid: { fn: (x) => 1 / (1 + Math.exp(-x)), color: '#10b981', derivative: (x) => x * (1 - x) },
+        tanh: { fn: (x) => Math.tanh(x), color: '#f59e0b', derivative: (x) => 1 - x * x },
+        leaky_relu: { fn: (x) => x > 0 ? x : 0.01 * x, color: '#8b5cf6', derivative: (x) => x > 0 ? 1 : 0.01 }
+    };
+
+    const trainStep = useCallback(() => {
+        if (!isTraining) return;
+
+        setEpoch(prev => prev + 1);
+        setLoss(prev => Math.max(0.01, prev * (0.995 + Math.random() * 0.01)));
+        setAccuracy(prev => Math.min(0.99, prev + Math.random() * 0.002));
+
+        const newGradients = layers.map((layerSize, layerIndex) => 
+            Array(layerSize).fill(0).map(() => ({
+                magnitude: Math.random() * 0.5 + 0.1,
+                direction: Math.random() * 2 * Math.PI,
+                layerIndex
+            }))
+        );
+        setGradientFlow(newGradients);
+    }, [isTraining, layers]);
+
+    useEffect(() => {
+        if (isTraining) {
+            const interval = setInterval(trainStep, 100);
+            return () => clearInterval(interval);
+        }
+    }, [isTraining, trainStep]);
+
+    useEffect(() => {
+        const svg = d3.select(svgRef.current);
+        svg.selectAll("*").remove();
+
+        const width = 900;
+        const height = 500;
+        svg.attr("width", width).attr("height", height);
+
+        const defs = svg.append('defs');
+        defs.append('marker')
+            .attr('id', 'arrowhead')
+            .attr('markerWidth', 10)
+            .attr('markerHeight', 7)
+            .attr('refX', 9)
+            .attr('refY', 3.5)
+            .attr('orient', 'auto')
+            .append('polygon')
+            .attr('points', '0 0, 10 3.5, 0 7')
+            .attr('fill', '#ef4444');
+
+        const layerSpacing = width / (layers.length + 1);
+        
+        layers.forEach((layerSize, layerIndex) => {
+            const x = layerSpacing * (layerIndex + 1);
+            const neuronSpacing = height / (layerSize + 1);
+            
+            if (layerIndex < layers.length - 1) {
+                const nextLayerSize = layers[layerIndex + 1];
+                const nextX = layerSpacing * (layerIndex + 2);
+                
+                for (let i = 0; i < layerSize; i++) {
+                    for (let j = 0; j < nextLayerSize; j++) {
+                        const y1 = neuronSpacing * (i + 1);
+                        const y2 = neuronSpacing * (j + 1);
+                        const strength = Math.random() * (1 - loss);
+                        
+                        svg.append('line')
+                            .attr('x1', x).attr('y1', y1)
+                            .attr('x2', nextX).attr('y2', y2)
+                            .attr('stroke', activationFunctions[activationFunction].color)
+                            .attr('stroke-width', strength * 2 + 0.5)
+                            .attr('opacity', 0.3 + strength * 0.4)
+                            .attr('stroke-dasharray', dropoutRate > Math.random() ? '3,3' : '0');
+                    }
+                }
+            }
+            
+            for (let i = 0; i < layerSize; i++) {
+                const y = neuronSpacing * (i + 1);
+                const activation = Math.random();
+                const isDropped = dropoutRate > Math.random() && isTraining;
+                
+                svg.append('circle')
+                    .attr('cx', x).attr('cy', y).attr('r', 15)
+                    .attr('fill', isDropped ? '#6b7280' : activationFunctions[activationFunction].color)
+                    .attr('stroke', '#e5e7eb').attr('stroke-width', 2)
+                    .attr('opacity', isDropped ? 0.3 : 0.8 + activation * 0.2);
+
+                if (showGradients && gradientFlow[layerIndex] && gradientFlow[layerIndex][i]) {
+                    const gradient = gradientFlow[layerIndex][i];
+                    const arrowLength = gradient.magnitude * 30;
+                    const endX = x + Math.cos(gradient.direction) * arrowLength;
+                    const endY = y + Math.sin(gradient.direction) * arrowLength;
+                    
+                    svg.append('line')
+                        .attr('x1', x).attr('y1', y)
+                        .attr('x2', endX).attr('y2', endY)
+                        .attr('stroke', '#ef4444').attr('stroke-width', 2)
+                        .attr('marker-end', 'url(#arrowhead)').attr('opacity', 0.7);
+                }
+            }
+            
+            svg.append('text')
+                .attr('x', x).attr('y', height - 20)
+                .attr('text-anchor', 'middle').attr('fill', '#e5e7eb')
+                .attr('font-size', '12px')
+                .text(`Layer ${layerIndex + 1} (${layerSize})`);
+        });
+
+    }, [layers, activationFunction, dropoutRate, gradientFlow, showGradients, loss]);
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold text-white mb-4">Advanced Deep Neural Network</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Network Architecture</h4>
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-300">Layers: {layers.join(' → ')}</label>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => setLayers(prev => [...prev.slice(0, -1), prev[prev.length - 1] + 1])}
+                                className="px-2 py-1 bg-blue-600 text-white rounded text-xs"
+                            >
+                                Add Neuron
+                            </button>
+                            <button
+                                onClick={() => setLayers(prev => prev.length < 6 ? [...prev, 3] : prev)}
+                                className="px-2 py-1 bg-green-600 text-white rounded text-xs"
+                            >
+                                Add Layer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Training Parameters</h4>
+                    <div className="space-y-2">
+                        <div>
+                            <label className="text-sm text-gray-300">Learning Rate: {learningRate}</label>
+                            <input type="range" min="0.001" max="0.1" step="0.001"
+                                value={learningRate}
+                                onChange={(e) => setLearningRate(parseFloat(e.target.value))}
+                                className="w-full" />
+                        </div>
+                        <div>
+                            <label className="text-sm text-gray-300">Dropout Rate: {dropoutRate}</label>
+                            <input type="range" min="0" max="0.5" step="0.05"
+                                value={dropoutRate}
+                                onChange={(e) => setDropoutRate(parseFloat(e.target.value))}
+                                className="w-full" />
+                        </div>
+                        <div>
+                            <label className="text-sm text-gray-300">Activation Function</label>
+                            <select value={activationFunction}
+                                onChange={(e) => setActivationFunction(e.target.value)}
+                                className="w-full bg-gray-600 text-white rounded px-2 py-1">
+                                {Object.keys(activationFunctions).map(fn => (
+                                    <option key={fn} value={fn}>{fn.toUpperCase()}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Training Status</h4>
+                    <div className="space-y-2">
+                        <div className="text-sm text-gray-300">
+                            <p>Epoch: {epoch}</p>
+                            <p>Loss: {loss.toFixed(4)}</p>
+                            <p>Accuracy: {(accuracy * 100).toFixed(1)}%</p>
+                        </div>
+                        <div className="flex space-x-2">
+                            <button onClick={() => setIsTraining(!isTraining)}
+                                className={`px-4 py-2 rounded text-white ${isTraining ? 'bg-red-600' : 'bg-green-600'}`}>
+                                {isTraining ? 'Stop' : 'Start'} Training
+                            </button>
+                            <button onClick={() => setShowGradients(!showGradients)}
+                                className={`px-4 py-2 rounded text-white ${showGradients ? 'bg-yellow-600' : 'bg-gray-600'}`}>
+                                {showGradients ? 'Hide' : 'Show'} Gradients
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-gray-900 p-4 rounded overflow-x-auto">
+                <svg ref={svgRef}></svg>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Training Progress</h4>
+                    <div className="space-y-2">
+                        <div>
+                            <div className="flex justify-between text-sm text-gray-300">
+                                <span>Loss</span><span>{loss.toFixed(4)}</span>
+                            </div>
+                            <div className="w-full bg-gray-600 rounded-full h-2">
+                                <div className="bg-red-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${Math.max(5, (1 - loss) * 100)}%` }}></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-sm text-gray-300">
+                                <span>Accuracy</span><span>{(accuracy * 100).toFixed(1)}%</span>
+                            </div>
+                            <div className="w-full bg-gray-600 rounded-full h-2">
+                                <div className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${accuracy * 100}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Network Info</h4>
+                    <div className="text-sm text-gray-300 space-y-1">
+                        <p>Total Parameters: {layers.reduce((total, current, index) => 
+                            index === 0 ? current : total + current * layers[index - 1], 0).toLocaleString()}</p>
+                        <p>Active Connections: {Math.round((1 - dropoutRate) * 100)}%</p>
+                        <p>Gradient Flow: {showGradients ? 'Visible' : 'Hidden'}</p>
+                        <p>Training Status: {isTraining ? 'Active' : 'Paused'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Advanced Reinforcement Learning Environment - Practitioner Level  
+export const AdvancedRLEnvironment = () => {
+    const canvasRef = useRef();
+    const [environment, setEnvironment] = useState('gridworld');
+    const [algorithm, setAlgorithm] = useState('q_learning');
+    const [isTraining, setIsTraining] = useState(false);
+    const [episode, setEpisode] = useState(0);
+    const [totalReward, setTotalReward] = useState(0);
+    const [epsilon, setEpsilon] = useState(0.9);
+    const [learningRate, setLearningRate] = useState(0.1);
+    const [discountFactor, setDiscountFactor] = useState(0.95);
+    const [qTable, setQTable] = useState({});
+    const [agentPosition, setAgentPosition] = useState({ x: 0, y: 0 });
+
+    const environments = {
+        gridworld: {
+            size: { width: 10, height: 10 },
+            goal: { x: 9, y: 9 },
+            obstacles: [
+                { x: 3, y: 3 }, { x: 3, y: 4 }, { x: 3, y: 5 },
+                { x: 6, y: 2 }, { x: 6, y: 3 }, { x: 6, y: 4 },
+                { x: 7, y: 6 }, { x: 8, y: 6 }
+            ],
+            rewards: { goal: 100, step: -1, obstacle: -50 }
+        }
+    };
+
+    const actions = ['up', 'down', 'left', 'right'];
+    const getStateKey = (pos) => `${pos.x},${pos.y}`;
+
+    const getQValue = useCallback((state, action) => {
+        return qTable[`${state}_${action}`] || 0;
+    }, [qTable]);
+
+    const updateQValue = useCallback((state, action, reward, nextState) => {
+        const currentQ = getQValue(state, action);
+        const maxNextQ = Math.max(...actions.map(a => getQValue(nextState, a)));
+        const newQ = currentQ + learningRate * (reward + discountFactor * maxNextQ - currentQ);
+        
+        setQTable(prev => ({ ...prev, [`${state}_${action}`]: newQ }));
+    }, [getQValue, learningRate, discountFactor]);
+
+    const selectAction = useCallback((state) => {
+        if (Math.random() < epsilon) {
+            return actions[Math.floor(Math.random() * actions.length)];
+        } else {
+            const qValues = actions.map(action => ({ action, q: getQValue(state, action) }));
+            return qValues.reduce((best, current) => current.q > best.q ? current : best).action;
+        }
+    }, [epsilon, getQValue]);
+
+    const moveAgent = useCallback((action) => {
+        setAgentPosition(prev => {
+            const env = environments[environment];
+            let newPos = { ...prev };
+
+            switch (action) {
+                case 'up': newPos.y = Math.max(0, prev.y - 1); break;
+                case 'down': newPos.y = Math.min(env.size.height - 1, prev.y + 1); break;
+                case 'left': newPos.x = Math.max(0, prev.x - 1); break;
+                case 'right': newPos.x = Math.min(env.size.width - 1, prev.x + 1); break;
+            }
+
+            let reward = env.rewards.step;
+            const isGoal = newPos.x === env.goal.x && newPos.y === env.goal.y;
+            const isObstacle = env.obstacles?.some(obs => obs.x === newPos.x && obs.y === newPos.y);
+
+            if (isGoal) {
+                reward = env.rewards.goal;
+                setTotalReward(prev => prev + reward);
+                setEpisode(prev => prev + 1);
+                newPos = { x: 0, y: 0 };
+            } else if (isObstacle) {
+                reward = env.rewards.obstacle;
+                newPos = prev;
+            }
+
+            setTotalReward(prev => prev + reward);
+
+            if (algorithm === 'q_learning') {
+                updateQValue(getStateKey(prev), action, reward, getStateKey(newPos));
+            }
+
+            return newPos;
+        });
+    }, [environment, algorithm, updateQValue]);
+
+    const trainStep = useCallback(() => {
+        if (!isTraining) return;
+        const currentState = getStateKey(agentPosition);
+        const action = selectAction(currentState);
+        moveAgent(action);
+        setEpsilon(prev => Math.max(0.01, prev * 0.995));
+    }, [isTraining, agentPosition, selectAction, moveAgent]);
+
+    useEffect(() => {
+        if (isTraining) {
+            const interval = setInterval(trainStep, 100);
+            return () => clearInterval(interval);
+        }
+    }, [isTraining, trainStep]);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const env = environments[environment];
+        const cellSize = 30;
+
+        canvas.width = env.size.width * cellSize;
+        canvas.height = env.size.height * cellSize;
+
+        ctx.fillStyle = '#1f2937';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = '#374151';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= env.size.width; x++) {
+            ctx.beginPath();
+            ctx.moveTo(x * cellSize, 0);
+            ctx.lineTo(x * cellSize, canvas.height);
+            ctx.stroke();
+        }
+        for (let y = 0; y <= env.size.height; y++) {
+            ctx.beginPath();
+            ctx.moveTo(0, y * cellSize);
+            ctx.lineTo(canvas.width, y * cellSize);
+            ctx.stroke();
+        }
+
+        for (let x = 0; x < env.size.width; x++) {
+            for (let y = 0; y < env.size.height; y++) {
+                const state = getStateKey({ x, y });
+                const maxQ = Math.max(...actions.map(a => getQValue(state, a)));
+                
+                if (maxQ !== 0) {
+                    const intensity = Math.min(1, Math.abs(maxQ) / 50);
+                    const color = maxQ > 0 ? `rgba(34, 197, 94, ${intensity * 0.5})` : `rgba(239, 68, 68, ${intensity * 0.5})`;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        if (env.obstacles) {
+            ctx.fillStyle = '#7f1d1d';
+            env.obstacles.forEach(obs => {
+                ctx.fillRect(obs.x * cellSize, obs.y * cellSize, cellSize, cellSize);
+            });
+        }
+
+        ctx.fillStyle = '#059669';
+        ctx.fillRect(env.goal.x * cellSize, env.goal.y * cellSize, cellSize, cellSize);
+
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(
+            agentPosition.x * cellSize + cellSize / 2,
+            agentPosition.y * cellSize + cellSize / 2,
+            cellSize / 3, 0, 2 * Math.PI
+        );
+        ctx.fill();
+
+    }, [environment, agentPosition, qTable, getQValue]);
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold text-white mb-4">Advanced Reinforcement Learning</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Environment</h4>
+                    <select value={environment} onChange={(e) => setEnvironment(e.target.value)}
+                        className="w-full bg-gray-600 text-white rounded px-2 py-1 mb-2" disabled={isTraining}>
+                        <option value="gridworld">Grid World</option>
+                    </select>
+                    <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}
+                        className="w-full bg-gray-600 text-white rounded px-2 py-1" disabled={isTraining}>
+                        <option value="q_learning">Q-Learning</option>
+                        <option value="sarsa">SARSA</option>
+                        <option value="dqn">Deep Q-Network</option>
+                    </select>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Hyperparameters</h4>
+                    <div className="space-y-2">
+                        <div>
+                            <label className="text-xs text-gray-300">Epsilon: {epsilon.toFixed(3)}</label>
+                            <input type="range" min="0.01" max="1.0" step="0.01" value={epsilon}
+                                onChange={(e) => setEpsilon(parseFloat(e.target.value))}
+                                className="w-full" disabled={isTraining} />
+                        </div>
+                        <div>
+                            <label className="text-xs text-gray-300">Learning Rate: {learningRate}</label>
+                            <input type="range" min="0.01" max="0.5" step="0.01" value={learningRate}
+                                onChange={(e) => setLearningRate(parseFloat(e.target.value))}
+                                className="w-full" disabled={isTraining} />
+                        </div>
+                        <div>
+                            <label className="text-xs text-gray-300">Discount: {discountFactor}</label>
+                            <input type="range" min="0.5" max="0.99" step="0.01" value={discountFactor}
+                                onChange={(e) => setDiscountFactor(parseFloat(e.target.value))}
+                                className="w-full" disabled={isTraining} />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Training Stats</h4>
+                    <div className="text-sm text-gray-300 space-y-1">
+                        <p>Episode: {episode}</p>
+                        <p>Total Reward: {totalReward.toFixed(0)}</p>
+                        <p>Avg Reward: {episode > 0 ? (totalReward / episode).toFixed(1) : '0'}</p>
+                        <p>Exploration: {(epsilon * 100).toFixed(1)}%</p>
+                        <p>Q-entries: {Object.keys(qTable).length}</p>
+                    </div>
+                </div>
+
+                <div className="bg-gray-700 p-4 rounded">
+                    <h4 className="text-white font-semibold mb-2">Controls</h4>
+                    <div className="space-y-2">
+                        <button onClick={() => setIsTraining(!isTraining)}
+                            className={`w-full px-4 py-2 rounded text-white ${isTraining ? 'bg-red-600' : 'bg-green-600'}`}>
+                            {isTraining ? 'Stop' : 'Start'} Training
+                        </button>
+                        <button onClick={() => {
+                                setQTable({}); setAgentPosition({ x: 0, y: 0 });
+                                setTotalReward(0); setEpisode(0); setEpsilon(0.9);
+                            }}
+                            className="w-full px-4 py-2 bg-gray-600 text-white rounded" disabled={isTraining}>
+                            Reset
+                        </button>
+                        <div className="flex space-x-1">
+                            {actions.map(action => (
+                                <button key={action} onClick={() => moveAgent(action)}
+                                    className="flex-1 px-2 py-1 bg-blue-600 text-white rounded text-xs"
+                                    disabled={isTraining}>
+                                    {action[0].toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-gray-900 p-4 rounded overflow-auto">
+                <canvas ref={canvasRef} className="border border-gray-600"></canvas>
+            </div>
+
+            <div className="mt-4 bg-gray-700 p-4 rounded">
+                <h4 className="text-white font-semibold mb-2">Legend</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-300">Agent</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-600"></div>
+                        <span className="text-gray-300">Goal</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-red-900"></div>
+                        <span className="text-gray-300">Obstacles</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-500 opacity-50"></div>
+                        <span className="text-gray-300">High Q-values</span>
+                    </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                    Green areas indicate positive Q-values, red areas negative Q-values.
+                    Agent uses ε-greedy policy with {(epsilon * 100).toFixed(1)}% exploration.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// ========================================
+// ARCHITECT COURSE COMPONENTS
+// ========================================
+
+// System Architecture Visualization Component
+export const SystemArchitectureVisualization = () => {
+    const [architectureType, setArchitectureType] = useState('monolithic');
+    const [dataFlow, setDataFlow] = useState(false);
+    const svgRef = useRef();
+
+    const architectures = {
+        monolithic: {
+            name: 'Monolithic Architecture',
+            components: [
+                { id: 'ui', name: 'UI Layer', x: 200, y: 50, width: 200, height: 80, color: '#3b82f6' },
+                { id: 'business', name: 'Business Logic', x: 200, y: 150, width: 200, height: 80, color: '#10b981' },
+                { id: 'data', name: 'Data Access', x: 200, y: 250, width: 200, height: 80, color: '#f59e0b' },
+                { id: 'db', name: 'Database', x: 200, y: 350, width: 200, height: 80, color: '#ef4444' }
+            ],
+            connections: [
+                { from: 'ui', to: 'business' },
+                { from: 'business', to: 'data' },
+                { from: 'data', to: 'db' }
+            ]
+        },
+        microservices: {
+            name: 'Microservices Architecture',
+            components: [
+                { id: 'gateway', name: 'API Gateway', x: 300, y: 50, width: 150, height: 60, color: '#8b5cf6' },
+                { id: 'user', name: 'User Service', x: 100, y: 150, width: 120, height: 80, color: '#3b82f6' },
+                { id: 'order', name: 'Order Service', x: 280, y: 150, width: 120, height: 80, color: '#10b981' },
+                { id: 'payment', name: 'Payment Service', x: 460, y: 150, width: 120, height: 80, color: '#f59e0b' },
+                { id: 'userdb', name: 'User DB', x: 100, y: 280, width: 120, height: 60, color: '#ef4444' },
+                { id: 'orderdb', name: 'Order DB', x: 280, y: 280, width: 120, height: 60, color: '#ef4444' },
+                { id: 'paymentdb', name: 'Payment DB', x: 460, y: 280, width: 120, height: 60, color: '#ef4444' }
+            ],
+            connections: [
+                { from: 'gateway', to: 'user' },
+                { from: 'gateway', to: 'order' },
+                { from: 'gateway', to: 'payment' },
+                { from: 'user', to: 'userdb' },
+                { from: 'order', to: 'orderdb' },
+                { from: 'payment', to: 'paymentdb' }
+            ]
+        },
+        serverless: {
+            name: 'Serverless Architecture',
+            components: [
+                { id: 'client', name: 'Client App', x: 50, y: 100, width: 120, height: 60, color: '#3b82f6' },
+                { id: 'cdn', name: 'CDN', x: 50, y: 200, width: 120, height: 60, color: '#8b5cf6' },
+                { id: 'lambda1', name: 'Auth Function', x: 250, y: 80, width: 120, height: 60, color: '#10b981' },
+                { id: 'lambda2', name: 'API Function', x: 250, y: 160, width: 120, height: 60, color: '#10b981' },
+                { id: 'lambda3', name: 'Process Function', x: 250, y: 240, width: 120, height: 60, color: '#10b981' },
+                { id: 'dynamo', name: 'DynamoDB', x: 450, y: 120, width: 120, height: 60, color: '#ef4444' },
+                { id: 's3', name: 'S3 Storage', x: 450, y: 200, width: 120, height: 60, color: '#f59e0b' }
+            ],
+            connections: [
+                { from: 'client', to: 'lambda1' },
+                { from: 'client', to: 'lambda2' },
+                { from: 'cdn', to: 'lambda3' },
+                { from: 'lambda1', to: 'dynamo' },
+                { from: 'lambda2', to: 'dynamo' },
+                { from: 'lambda3', to: 's3' }
+            ]
+        }
+    };
+
+    useEffect(() => {
+        if (!svgRef.current) return;
+
+        const svg = d3.select(svgRef.current);
+        svg.selectAll("*").remove();
+
+        const currentArch = architectures[architectureType];
+        
+        // Draw connections
+        const connections = svg.selectAll('.connection')
+            .data(currentArch.connections)
+            .enter()
+            .append('line')
+            .attr('class', 'connection')
+            .attr('x1', d => {
+                const from = currentArch.components.find(c => c.id === d.from);
+                return from.x + from.width / 2;
+            })
+            .attr('y1', d => {
+                const from = currentArch.components.find(c => c.id === d.from);
+                return from.y + from.height;
+            })
+            .attr('x2', d => {
+                const to = currentArch.components.find(c => c.id === d.to);
+                return to.x + to.width / 2;
+            })
+            .attr('y2', d => {
+                const to = currentArch.components.find(c => c.id === d.to);
+                return to.y;
+            })
+            .attr('stroke', '#6b7280')
+            .attr('stroke-width', 2)
+            .attr('marker-end', 'url(#arrowhead)');
+
+        // Add arrowhead marker
+        svg.append('defs')
+            .append('marker')
+            .attr('id', 'arrowhead')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 8)
+            .attr('refY', 0)
+            .attr('markerWidth', 6)
+            .attr('markerHeight', 6)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', '#6b7280');
+
+        // Draw components
+        const components = svg.selectAll('.component')
+            .data(currentArch.components)
+            .enter()
+            .append('g')
+            .attr('class', 'component');
+
+        components.append('rect')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .attr('width', d => d.width)
+            .attr('height', d => d.height)
+            .attr('fill', d => d.color)
+            .attr('rx', 8)
+            .attr('opacity', 0.8);
+
+        components.append('text')
+            .attr('x', d => d.x + d.width / 2)
+            .attr('y', d => d.y + d.height / 2)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('fill', 'white')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text(d => d.name);
+
+        // Add data flow animation
+        if (dataFlow) {
+            const animateDataFlow = () => {
+                currentArch.connections.forEach((conn, index) => {
+                    setTimeout(() => {
+                        const from = currentArch.components.find(c => c.id === conn.from);
+                        const to = currentArch.components.find(c => c.id === conn.to);
+                        
+                        const circle = svg.append('circle')
+                            .attr('cx', from.x + from.width / 2)
+                            .attr('cy', from.y + from.height)
+                            .attr('r', 4)
+                            .attr('fill', '#fbbf24')
+                            .attr('opacity', 0.8);
+
+                        circle.transition()
+                            .duration(1000)
+                            .attr('cx', to.x + to.width / 2)
+                            .attr('cy', to.y)
+                            .on('end', () => circle.remove());
+                    }, index * 200);
+                });
+            };
+
+            const interval = setInterval(animateDataFlow, 2000);
+            animateDataFlow();
+
+            return () => clearInterval(interval);
+        }
+    }, [architectureType, dataFlow]);
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold text-white mb-4">System Architecture Visualization</h3>
+            
+            <div className="mb-4 flex gap-4">
+                {Object.entries(architectures).map(([key, arch]) => (
+                    <button
+                        key={key}
+                        onClick={() => setArchitectureType(key)}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            architectureType === key
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                    >
+                        {arch.name}
+                    </button>
+                ))}
+            </div>
+
+            <div className="mb-4">
+                <label className="flex items-center text-white">
+                    <input
+                        type="checkbox"
+                        checked={dataFlow}
+                        onChange={(e) => setDataFlow(e.target.checked)}
+                        className="mr-2"
+                    />
+                    Show Data Flow Animation
+                </label>
+            </div>
+
+            <div className="bg-gray-900 p-4 rounded-lg">
+                <svg
+                    ref={svgRef}
+                    width="650"
+                    height="400"
+                    className="w-full h-auto"
+                />
+            </div>
+
+            <div className="mt-4 text-sm text-gray-300">
+                <p><strong>Current:</strong> {architectures[architectureType].name}</p>
+                <p className="mt-2">
+                    {architectureType === 'monolithic' && 'Single deployable unit with tight coupling between components.'}
+                    {architectureType === 'microservices' && 'Distributed services with independent deployment and scaling.'}
+                    {architectureType === 'serverless' && 'Event-driven functions with automatic scaling and pay-per-use pricing.'}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Distributed System Animation Component
+export const DistributedSystemAnimation = () => {
+    const [algorithm, setAlgorithm] = useState('raft');
+    const [isRunning, setIsRunning] = useState(false);
+    const [step, setStep] = useState(0);
+    const svgRef = useRef();
+
+    const algorithms = {
+        raft: {
+            name: 'Raft Consensus',
+            nodes: [
+                { id: 'leader', name: 'Leader', x: 300, y: 100, state: 'leader', color: '#10b981' },
+                { id: 'follower1', name: 'Follower 1', x: 150, y: 200, state: 'follower', color: '#3b82f6' },
+                { id: 'follower2', name: 'Follower 2', x: 450, y: 200, state: 'follower', color: '#3b82f6' },
+                { id: 'follower3', name: 'Follower 3', x: 200, y: 300, state: 'follower', color: '#3b82f6' },
+                { id: 'follower4', name: 'Follower 4', x: 400, y: 300, state: 'follower', color: '#3b82f6' }
+            ],
+            steps: [
+                'Leader sends heartbeat to followers',
+                'Followers acknowledge heartbeat',
+                'Client sends request to leader',
+                'Leader replicates log entry',
+                'Majority acknowledges replication',
+                'Leader commits entry and responds'
+            ]
+        },
+        gossip: {
+            name: 'Gossip Protocol',
+            nodes: [
+                { id: 'node1', name: 'Node 1', x: 300, y: 100, state: 'active', color: '#8b5cf6' },
+                { id: 'node2', name: 'Node 2', x: 150, y: 200, state: 'active', color: '#8b5cf6' },
+                { id: 'node3', name: 'Node 3', x: 450, y: 200, state: 'active', color: '#8b5cf6' },
+                { id: 'node4', name: 'Node 4', x: 200, y: 300, state: 'active', color: '#8b5cf6' },
+                { id: 'node5', name: 'Node 5', x: 400, y: 300, state: 'active', color: '#8b5cf6' }
+            ],
+            steps: [
+                'Node 1 receives new information',
+                'Node 1 gossips to random neighbors',
+                'Neighbors propagate to their neighbors',
+                'Information spreads exponentially',
+                'All nodes eventually receive information',
+                'System reaches consistency'
+            ]
+        },
+        byzantine: {
+            name: 'Byzantine Fault Tolerance',
+            nodes: [
+                { id: 'general1', name: 'General 1', x: 300, y: 80, state: 'honest', color: '#10b981' },
+                { id: 'general2', name: 'General 2', x: 150, y: 180, state: 'honest', color: '#10b981' },
+                { id: 'general3', name: 'General 3', x: 450, y: 180, state: 'byzantine', color: '#ef4444' },
+                { id: 'general4', name: 'General 4', x: 200, y: 280, state: 'honest', color: '#10b981' },
+                { id: 'general5', name: 'General 5', x: 400, y: 280, state: 'honest', color: '#10b981' }
+            ],
+            steps: [
+                'Generals propose attack/retreat',
+                'Byzantine general sends conflicting messages',
+                'Honest generals exchange messages',
+                'Majority voting determines consensus',
+                'Honest nodes ignore Byzantine messages',
+                'Consensus achieved despite fault'
+            ]
+        }
+    };
+
+    useEffect(() => {
+        if (!svgRef.current) return;
+
+        const svg = d3.select(svgRef.current);
+        svg.selectAll("*").remove();
+
+        const currentAlg = algorithms[algorithm];
+        
+        // Draw connections between all nodes
+        const connections = [];
+        for (let i = 0; i < currentAlg.nodes.length; i++) {
+            for (let j = i + 1; j < currentAlg.nodes.length; j++) {
+                connections.push({
+                    from: currentAlg.nodes[i],
+                    to: currentAlg.nodes[j]
+                });
+            }
+        }
+
+        svg.selectAll('.connection')
+            .data(connections)
+            .enter()
+            .append('line')
+            .attr('class', 'connection')
+            .attr('x1', d => d.from.x)
+            .attr('y1', d => d.from.y)
+            .attr('x2', d => d.to.x)
+            .attr('y2', d => d.to.y)
+            .attr('stroke', '#374151')
+            .attr('stroke-width', 1)
+            .attr('opacity', 0.3);
+
+        // Draw nodes
+        const nodes = svg.selectAll('.node')
+            .data(currentAlg.nodes)
+            .enter()
+            .append('g')
+            .attr('class', 'node');
+
+        nodes.append('circle')
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', 30)
+            .attr('fill', d => d.color)
+            .attr('stroke', '#1f2937')
+            .attr('stroke-width', 2);
+
+        nodes.append('text')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'middle')
+            .attr('fill', 'white')
+            .attr('font-size', '10px')
+            .attr('font-weight', 'bold')
+            .text(d => d.name);
+
+        // Add state labels
+        nodes.append('text')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y + 45)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#9ca3af')
+            .attr('font-size', '8px')
+            .text(d => d.state);
+
+    }, [algorithm]);
+
+    useEffect(() => {
+        if (!isRunning) return;
+
+        const interval = setInterval(() => {
+            setStep(prev => (prev + 1) % algorithms[algorithm].steps.length);
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [isRunning, algorithm]);
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold text-white mb-4">Distributed System Algorithms</h3>
+            
+            <div className="mb-4 flex gap-4">
+                {Object.entries(algorithms).map(([key, alg]) => (
+                    <button
+                        key={key}
+                        onClick={() => {
+                            setAlgorithm(key);
+                            setStep(0);
+                        }}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            algorithm === key
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                    >
+                        {alg.name}
+                    </button>
+                ))}
+            </div>
+
+            <div className="mb-4">
+                <button
+                    onClick={() => setIsRunning(!isRunning)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                        isRunning
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
+                >
+                    {isRunning ? 'Stop Animation' : 'Start Animation'}
+                </button>
+            </div>
+
+            <div className="bg-gray-900 p-4 rounded-lg mb-4">
+                <svg
+                    ref={svgRef}
+                    width="600"
+                    height="400"
+                    className="w-full h-auto"
+                />
+            </div>
+
+            <div className="bg-gray-700 p-4 rounded-lg">
+                <h4 className="font-bold text-white mb-2">Algorithm Steps:</h4>
+                <div className="space-y-2">
+                    {algorithms[algorithm].steps.map((stepText, index) => (
+                        <div
+                            key={index}
+                            className={`p-2 rounded transition-colors ${
+                                index === step && isRunning
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-600 text-gray-300'
+                            }`}
+                        >
+                            <span className="font-medium">{index + 1}.</span> {stepText}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Scalability Demonstration Component
+export const ScalabilityDemonstration = () => {
+    const [scalingType, setScalingType] = useState('horizontal');
+    const [load, setLoad] = useState(50);
+    const [servers, setServers] = useState([{ id: 1, cpu: 50, memory: 60, load: 50 }]);
+    const [isAutoScaling, setIsAutoScaling] = useState(false);
+
+    const metrics = {
+        totalRequests: servers.reduce((sum, server) => sum + server.load * 10, 0),
+        avgResponseTime: Math.max(50, Math.min(500, load * 2 + Math.random() * 50)),
+        throughput: servers.length * Math.max(0, 100 - load) * 2,
+        cost: servers.length * (scalingType === 'horizontal' ? 50 : 100)
+    };
+
+    const handleLoadChange = (newLoad) => {
+        setLoad(newLoad);
+        
+        if (scalingType === 'vertical') {
+            // Vertical scaling - upgrade existing servers
+            setServers(prevServers => 
+                prevServers.map(server => ({
+                    ...server,
+                    cpu: Math.min(100, newLoad + Math.random() * 20),
+                    memory: Math.min(100, newLoad + Math.random() * 15),
+                    load: newLoad
+                }))
+            );
+        } else {
+            // Horizontal scaling
+            if (isAutoScaling) {
+                const optimalServers = Math.max(1, Math.ceil(newLoad / 70));
+                const currentServers = servers.length;
+                
+                if (optimalServers > currentServers) {
+                    // Scale out
+                    const newServers = [];
+                    for (let i = currentServers + 1; i <= optimalServers; i++) {
+                        newServers.push({
+                            id: i,
+                            cpu: newLoad / optimalServers + Math.random() * 10,
+                            memory: newLoad / optimalServers + Math.random() * 15,
+                            load: newLoad / optimalServers
+                        });
+                    }
+                    setServers(prev => [...prev, ...newServers]);
+                } else if (optimalServers < currentServers && optimalServers >= 1) {
+                    // Scale in
+                    setServers(prev => prev.slice(0, optimalServers));
+                }
+            }
+            
+            // Update existing servers
+            setServers(prevServers => 
+                prevServers.map(server => ({
+                    ...server,
+                    cpu: Math.min(100, newLoad / prevServers.length + Math.random() * 15),
+                    memory: Math.min(100, newLoad / prevServers.length + Math.random() * 10),
+                    load: newLoad / prevServers.length
+                }))
+            );
+        }
+    };
+
+    const addServer = () => {
+        if (scalingType === 'horizontal') {
+            const newServer = {
+                id: servers.length + 1,
+                cpu: load / (servers.length + 1) + Math.random() * 10,
+                memory: load / (servers.length + 1) + Math.random() * 15,
+                load: load / (servers.length + 1)
+            };
+            setServers(prev => [...prev, newServer]);
+        }
+    };
+
+    const removeServer = () => {
+        if (servers.length > 1) {
+            setServers(prev => prev.slice(0, -1));
+        }
+    };
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold text-white mb-4">Scalability Demonstration</h3>
+            
+            <div className="mb-6 flex gap-4">
+                <button
+                    onClick={() => setScalingType('horizontal')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                        scalingType === 'horizontal'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                >
+                    Horizontal Scaling
+                </button>
+                <button
+                    onClick={() => setScalingType('vertical')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                        scalingType === 'vertical'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                >
+                    Vertical Scaling
+                </button>
+            </div>
+
+            <div className="mb-6 grid grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-white mb-2">System Load: {load}%</label>
+                    <input
+                        type="range"
+                        min="10"
+                        max="100"
+                        value={load}
+                        onChange={(e) => handleLoadChange(parseInt(e.target.value))}
+                        className="w-full"
+                    />
+                </div>
+                
+                {scalingType === 'horizontal' && (
+                    <div className="flex items-center">
+                        <label className="flex items-center text-white">
+                            <input
+                                type="checkbox"
+                                checked={isAutoScaling}
+                                onChange={(e) => setIsAutoScaling(e.target.checked)}
+                                className="mr-2"
+                            />
+                            Auto Scaling
+                        </label>
+                    </div>
+                )}
+            </div>
+
+            {/* Metrics Dashboard */}
+            <div className="mb-6 grid grid-cols-4 gap-4">
+                <div className="bg-gray-700 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-blue-400">{Math.round(metrics.totalRequests)}</div>
+                    <div className="text-sm text-gray-300">Total Requests/sec</div>
+                </div>
+                <div className="bg-gray-700 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-green-400">{Math.round(metrics.avgResponseTime)}ms</div>
+                    <div className="text-sm text-gray-300">Avg Response Time</div>
+                </div>
+                <div className="bg-gray-700 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-yellow-400">{Math.round(metrics.throughput)}</div>
+                    <div className="text-sm text-gray-300">Throughput</div>
+                </div>
+                <div className="bg-gray-700 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-red-400">${metrics.cost}</div>
+                    <div className="text-sm text-gray-300">Cost/hour</div>
+                </div>
+            </div>
+
+            {/* Server Controls */}
+            {scalingType === 'horizontal' && !isAutoScaling && (
+                <div className="mb-6 flex gap-4">
+                    <button
+                        onClick={addServer}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                    >
+                        Add Server
+                    </button>
+                    <button
+                        onClick={removeServer}
+                        disabled={servers.length <= 1}
+                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Remove Server
+                    </button>
+                </div>
+            )}
+
+            {/* Server Visualization */}
+            <div className="bg-gray-900 p-4 rounded-lg">
+                <h4 className="text-white font-bold mb-4">
+                    {scalingType === 'horizontal' ? 'Server Farm' : 'Server Resources'} 
+                    ({servers.length} server{servers.length !== 1 ? 's' : ''})
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {servers.map((server) => (
+                        <div key={server.id} className="bg-gray-700 p-4 rounded-lg">
+                            <div className="text-white font-medium mb-3">
+                                Server {server.id}
+                                {scalingType === 'vertical' && servers.length === 1 && (
+                                    <span className="ml-2 text-xs bg-green-600 px-2 py-1 rounded">
+                                        Upgraded
+                                    </span>
+                                )}
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-300">CPU</span>
+                                        <span className="text-gray-300">{Math.round(server.cpu)}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className={`h-2 rounded-full transition-all duration-500 ${
+                                                server.cpu > 80 ? 'bg-red-500' : 
+                                                server.cpu > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                                            }`}
+                                            style={{ width: `${Math.min(100, server.cpu)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-300">Memory</span>
+                                        <span className="text-gray-300">{Math.round(server.memory)}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className={`h-2 rounded-full transition-all duration-500 ${
+                                                server.memory > 80 ? 'bg-red-500' : 
+                                                server.memory > 60 ? 'bg-yellow-500' : 'bg-blue-500'
+                                            }`}
+                                            style={{ width: `${Math.min(100, server.memory)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-300">Load</span>
+                                        <span className="text-gray-300">{Math.round(server.load)}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className="h-2 rounded-full bg-purple-500 transition-all duration-500"
+                                            style={{ width: `${Math.min(100, server.load)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="mt-4 text-sm text-gray-300">
+                <p>
+                    <strong>{scalingType === 'horizontal' ? 'Horizontal' : 'Vertical'} Scaling:</strong>{' '}
+                    {scalingType === 'horizontal' 
+                        ? 'Adding more servers to handle increased load. Better fault tolerance but more complex management.'
+                        : 'Upgrading server resources (CPU, RAM) to handle increased load. Simpler but has limits and single point of failure.'
+                    }
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Performance Optimization Tools Component
+export const PerformanceOptimizationTools = () => {
+    const [activeTab, setActiveTab] = useState('cpu');
+    const [isMonitoring, setIsMonitoring] = useState(false);
+    const [metrics, setMetrics] = useState({
+        cpu: { usage: 45, cores: [23, 67, 45, 34], temperature: 68 },
+        memory: { used: 65, available: 16, swap: 12, cached: 23 },
+        network: { inbound: 120, outbound: 89, connections: 234, latency: 45 },
+        disk: { read: 45, write: 23, usage: 78, iops: 1250 }
+    });
+    const [optimizations, setOptimizations] = useState([]);
+
+    // Simulate real-time metrics updates
+    useEffect(() => {
+        if (!isMonitoring) return;
+
+        const interval = setInterval(() => {
+            setMetrics(prev => ({
+                cpu: {
+                    usage: Math.max(0, Math.min(100, prev.cpu.usage + (Math.random() - 0.5) * 10)),
+                    cores: prev.cpu.cores.map(core => 
+                        Math.max(0, Math.min(100, core + (Math.random() - 0.5) * 15))
+                    ),
+                    temperature: Math.max(30, Math.min(90, prev.cpu.temperature + (Math.random() - 0.5) * 5))
+                },
+                memory: {
+                    used: Math.max(0, Math.min(100, prev.memory.used + (Math.random() - 0.5) * 8)),
+                    available: Math.max(0, 32 - (prev.memory.used * 0.32)),
+                    swap: Math.max(0, Math.min(50, prev.memory.swap + (Math.random() - 0.5) * 3)),
+                    cached: Math.max(0, Math.min(40, prev.memory.cached + (Math.random() - 0.5) * 5))
+                },
+                network: {
+                    inbound: Math.max(0, prev.network.inbound + (Math.random() - 0.5) * 30),
+                    outbound: Math.max(0, prev.network.outbound + (Math.random() - 0.5) * 25),
+                    connections: Math.max(0, prev.network.connections + Math.floor((Math.random() - 0.5) * 20)),
+                    latency: Math.max(1, prev.network.latency + (Math.random() - 0.5) * 10)
+                },
+                disk: {
+                    read: Math.max(0, prev.disk.read + (Math.random() - 0.5) * 20),
+                    write: Math.max(0, prev.disk.write + (Math.random() - 0.5) * 15),
+                    usage: Math.max(0, Math.min(100, prev.disk.usage + (Math.random() - 0.5) * 2)),
+                    iops: Math.max(0, prev.disk.iops + Math.floor((Math.random() - 0.5) * 200))
+                }
+            }));
+
+            // Generate optimization suggestions based on metrics
+            const newOptimizations = [];
+            if (metrics.cpu.usage > 80) {
+                newOptimizations.push({
+                    type: 'warning',
+                    title: 'High CPU Usage',
+                    description: 'Consider optimizing CPU-intensive operations or scaling up',
+                    action: 'Optimize Code'
+                });
+            }
+            if (metrics.memory.used > 85) {
+                newOptimizations.push({
+                    type: 'error',
+                    title: 'Memory Pressure',
+                    description: 'Memory usage is critically high. Check for memory leaks',
+                    action: 'Analyze Memory'
+                });
+            }
+            if (metrics.network.latency > 100) {
+                newOptimizations.push({
+                    type: 'warning',
+                    title: 'High Network Latency',
+                    description: 'Network performance is degraded. Check network configuration',
+                    action: 'Optimize Network'
+                });
+            }
+            
+            setOptimizations(newOptimizations.slice(0, 3)); // Keep only top 3
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isMonitoring, metrics]);
+
+    const tabs = {
+        cpu: {
+            name: 'CPU Profiler',
+            icon: '🖥️',
+            component: (
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Overall CPU Usage</h4>
+                            <div className="text-3xl font-bold text-blue-400 mb-2">{Math.round(metrics.cpu.usage)}%</div>
+                            <div className="w-full bg-gray-600 rounded-full h-3">
+                                <div
+                                    className={`h-3 rounded-full transition-all duration-500 ${
+                                        metrics.cpu.usage > 80 ? 'bg-red-500' : 
+                                        metrics.cpu.usage > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${metrics.cpu.usage}%` }}
+                                />
+                            </div>
+                        </div>
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Temperature</h4>
+                            <div className="text-3xl font-bold text-orange-400 mb-2">{Math.round(metrics.cpu.temperature)}°C</div>
+                            <div className="text-sm text-gray-300">
+                                {metrics.cpu.temperature > 75 ? 'Running Hot' : 'Normal'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-gray-700 p-4 rounded-lg">
+                        <h4 className="text-white font-medium mb-3">Core Usage</h4>
+                        <div className="space-y-2">
+                            {metrics.cpu.cores.map((usage, index) => (
+                                <div key={index} className="flex items-center space-x-3">
+                                    <span className="text-gray-300 w-16">Core {index + 1}</span>
+                                    <div className="flex-1 bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className={`h-2 rounded-full transition-all duration-500 ${
+                                                usage > 80 ? 'bg-red-500' : 
+                                                usage > 60 ? 'bg-yellow-500' : 'bg-blue-500'
+                                            }`}
+                                            style={{ width: `${usage}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-gray-300 w-12 text-right">{Math.round(usage)}%</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        memory: {
+            name: 'Memory Analyzer',
+            icon: '🧠',
+            component: (
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Memory Usage</h4>
+                            <div className="text-3xl font-bold text-purple-400 mb-2">{Math.round(metrics.memory.used)}%</div>
+                            <div className="text-sm text-gray-300">{Math.round(metrics.memory.available)}GB Available</div>
+                        </div>
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Swap Usage</h4>
+                            <div className="text-3xl font-bold text-yellow-400 mb-2">{Math.round(metrics.memory.swap)}%</div>
+                            <div className="text-sm text-gray-300">
+                                {metrics.memory.swap > 50 ? 'High Swap Usage' : 'Normal'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-gray-700 p-4 rounded-lg">
+                        <h4 className="text-white font-medium mb-3">Memory Breakdown</h4>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-300">Used</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className="h-2 rounded-full bg-purple-500 transition-all duration-500"
+                                            style={{ width: `${metrics.memory.used}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-white w-12 text-right">{Math.round(metrics.memory.used)}%</span>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-300">Cached</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className="h-2 rounded-full bg-blue-500 transition-all duration-500"
+                                            style={{ width: `${metrics.memory.cached}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-white w-12 text-right">{Math.round(metrics.memory.cached)}%</span>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-300">Swap</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                                        <div
+                                            className="h-2 rounded-full bg-yellow-500 transition-all duration-500"
+                                            style={{ width: `${metrics.memory.swap}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-white w-12 text-right">{Math.round(metrics.memory.swap)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        network: {
+            name: 'Network Monitor',
+            icon: '🌐',
+            component: (
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Inbound Traffic</h4>
+                            <div className="text-3xl font-bold text-green-400 mb-2">{Math.round(metrics.network.inbound)} MB/s</div>
+                            <div className="text-sm text-gray-300">Download Speed</div>
+                        </div>
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Outbound Traffic</h4>
+                            <div className="text-3xl font-bold text-red-400 mb-2">{Math.round(metrics.network.outbound)} MB/s</div>
+                            <div className="text-sm text-gray-300">Upload Speed</div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Active Connections</h4>
+                            <div className="text-3xl font-bold text-blue-400 mb-2">{metrics.network.connections}</div>
+                            <div className="text-sm text-gray-300">TCP Connections</div>
+                        </div>
+                        <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="text-white font-medium mb-2">Latency</h4>
+                            <div className="text-3xl font-bold text-orange-400 mb-2">{Math.round(metrics.network.latency)}ms</div>
+                            <div className="text-sm text-gray-300">
+                                {metrics.network.latency > 100 ? 'High Latency' : 'Good'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        bottlenecks: {
+            name: 'Bottleneck Detector',
+            icon: '🔍',
+            component: (
+                <div className="space-y-4">
+                    <div className="bg-gray-700 p-4 rounded-lg">
+                        <h4 className="text-white font-medium mb-3">Performance Issues</h4>
+                        {optimizations.length > 0 ? (
+                            <div className="space-y-3">
+                                {optimizations.map((opt, index) => (
+                                    <div
+                                        key={index}
+                                        className={`p-3 rounded-lg border-l-4 ${
+                                            opt.type === 'error' 
+                                                ? 'bg-red-900 border-red-500' 
+                                                : 'bg-yellow-900 border-yellow-500'
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <h5 className="text-white font-medium">{opt.title}</h5>
+                                                <p className="text-gray-300 text-sm mt-1">{opt.description}</p>
+                                            </div>
+                                            <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+                                                {opt.action}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <div className="text-4xl mb-2">✅</div>
+                                <p className="text-green-400 font-medium">No Performance Issues Detected</p>
+                                <p className="text-gray-400 text-sm">Your system is running optimally</p>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="bg-gray-700 p-4 rounded-lg">
+                        <h4 className="text-white font-medium mb-3">System Health Score</h4>
+                        <div className="flex items-center space-x-4">
+                            <div className="flex-1">
+                                <div className="w-full bg-gray-600 rounded-full h-4">
+                                    <div
+                                        className={`h-4 rounded-full transition-all duration-500 ${
+                                            optimizations.length === 0 ? 'bg-green-500' :
+                                            optimizations.length <= 2 ? 'bg-yellow-500' : 'bg-red-500'
+                                        }`}
+                                        style={{ 
+                                            width: `${Math.max(20, 100 - optimizations.length * 25)}%` 
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="text-2xl font-bold text-white">
+                                {Math.max(20, 100 - optimizations.length * 25)}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+    };
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-white">Performance Optimization Tools</h3>
+                <button
+                    onClick={() => setIsMonitoring(!isMonitoring)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                        isMonitoring
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
+                >
+                    {isMonitoring ? 'Stop Monitoring' : 'Start Monitoring'}
+                </button>
+            </div>
+            
+            <div className="mb-6 flex gap-2 overflow-x-auto">
+                {Object.entries(tabs).map(([key, tab]) => (
+                    <button
+                        key={key}
+                        onClick={() => setActiveTab(key)}
+                        className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex items-center space-x-2 ${
+                            activeTab === key
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                    >
+                        <span>{tab.icon}</span>
+                        <span>{tab.name}</span>
+                    </button>
+                ))}
+            </div>
+
+            <div className="bg-gray-900 p-4 rounded-lg">
+                {tabs[activeTab].component}
+            </div>
+
+            {isMonitoring && (
+                <div className="mt-4 text-sm text-gray-400 flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Live monitoring active - metrics update every second</span>
+                </div>
+            )}
+        </div>
+    );
+};
