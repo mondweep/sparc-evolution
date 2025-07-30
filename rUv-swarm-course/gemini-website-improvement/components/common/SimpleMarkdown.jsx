@@ -18,6 +18,9 @@ import {
     PerformanceOptimizationTools
 } from '../../InteractiveComponents.jsx';
 import XorProblemVisualizer from '../visualizers/XorProblemVisualizer';
+import PSOParticleAnimation from '../visualizers/PSOParticleAnimation';
+import SwarmBehaviorDemo from '../visualizers/SwarmBehaviorDemo';
+import NeuralNetworkTraining from '../visualizers/NeuralNetworkTraining';
 
 const SimpleMarkdown = ({ content, lessonSlug }) => {
     const parts = content.split(/<div id="(.+?)"><\/div>/);
