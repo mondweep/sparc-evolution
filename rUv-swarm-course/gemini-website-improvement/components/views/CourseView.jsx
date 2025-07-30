@@ -2,54 +2,11 @@ import React, { useState, useContext } from 'react';
 import { ArrowLeft, User, BookOpen, ChevronDown, ChevronUp, CheckCircle, Award } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 
-// Note: courseData should be imported from App.jsx or passed as props
-// For now, we'll need to import it or access it through context
-const courseData = {
-    users: [
-        { id: 1, username: 'admin', email: 'admin@ruv-swarm.edu', firstName: 'System', lastName: 'Administrator', role: 'admin', bio: 'System administrator for the rUv-swarm learning platform.' },
-        { id: 2, username: 'dr_neuralnet', email: 'instructor@ruv-swarm.edu', firstName: 'Dr. Elena', lastName: 'NetworkWeaver', role: 'instructor', bio: 'AI researcher specializing in swarm intelligence and neural networks. PhD in Computer Science from MIT.' },
-        { id: 3, username: 'alex_student', email: 'alex@student.edu', firstName: 'Alex', lastName: 'Learner', role: 'student', bio: 'Computer Science student passionate about AI and distributed systems.' },
-        { id: 4, username: 'sarah_dev', email: 'sarah@developer.com', firstName: 'Sarah', lastName: 'Developer', role: 'student', bio: 'Full-stack developer exploring AI/ML applications.' },
-        { id: 5, username: 'mike_researcher', email: 'mike@research.org', firstName: 'Mike', lastName: 'Researcher', role: 'student', bio: 'Research scientist investigating evolutionary algorithms.' }
-    ],
-    courses: [
-        { id: 1, title: 'rUv-swarm Foundations', slug: 'ruv-swarm-foundations', level: 'foundations', duration_hours: 8, difficulty: 1, description: 'Master the fundamental concepts of swarm intelligence and neural networks. This course introduces you to the revolutionary approach of ephemeral intelligence through lightweight, temporary neural networks orchestrated in swarms.', prerequisites: 'Basic programming knowledge. Familiarity with C is helpful but not required.', learning_objectives: '• Understand the core concepts of neural networks and activation functions\n• Grasp the XOR problem and why it demonstrates non-linear separability\n• Learn swarm intelligence principles and emergence\n• Master Particle Swarm Optimization (PSO) fundamentals\n• Execute and analyze rUv-swarm programs from the command line', thumbnail_url: 'https://placehold.co/600x400/1e40af/ffffff?text=Foundations', is_published: true, instructor_id: 2 },
-        { id: 2, title: 'rUv-swarm Practitioner', slug: 'ruv-swarm-practitioner', level: 'practitioner', duration_hours: 16, difficulty: 3, description: 'Deep dive into the rUv-swarm codebase and learn to modify and extend the system. Master the FANN library, understand PSO implementation, and build your own neural network solutions.', prerequisites: 'Completion of rUv-swarm Foundations. Strong C programming skills required.', learning_objectives: '• Master the FANN (Fast Artificial Neural Network) library\n• Analyze and modify the rUv-swarm source code\n• Understand PSO implementation details and parameters\n• Tune hyperparameters for optimal performance\n• Adapt the system for new datasets and problems', thumbnail_url: 'https://placehold.co/600x400/be123c/ffffff?text=Practitioner', is_published: true, instructor_id: 2 },
-        { id: 3, title: 'rUv-swarm Architect', slug: 'ruv-swarm-architect', level: 'architect', duration_hours: 24, difficulty: 5, description: 'Design and implement advanced swarm intelligence systems. Learn to extend rUv-swarm with new optimization algorithms, deploy containerized solutions, and architect distributed cognitive systems.', prerequisites: 'Completion of rUv-swarm Practitioner. Advanced programming and system design experience.', learning_objectives: '• Implement alternative optimization algorithms (GA, ACO)\n• Design modular, extensible AI architectures\n• Containerize and deploy rUv-swarm applications\n• Architect solutions for complex, real-world problems\n• Create comprehensive AI system documentation', thumbnail_url: 'https://placehold.co/600x400/047857/ffffff?text=Architect', is_published: true, instructor_id: 2 }
-    ],
-    modules: [
-        // Foundations
-        { id: 1, course_id: 1, title: 'Introduction to Neural Networks', slug: 'intro-neural-networks', description: 'Understand the building blocks of artificial intelligence', order_index: 1, duration_minutes: 90 },
-        { id: 2, course_id: 1, title: 'The XOR Problem', slug: 'xor-problem', description: 'The classic test case that proves the power of neural networks', order_index: 2, duration_minutes: 75 },
-        { id: 3, course_id: 1, title: 'Introduction to Swarm Intelligence', slug: 'swarm-intelligence', description: 'How simple agents create complex intelligent behavior', order_index: 3, duration_minutes: 85 },
-        { id: 4, course_id: 1, title: 'Particle Swarm Optimization Fundamentals', slug: 'pso-fundamentals', description: 'Master the core algorithm behind rUv-swarm', order_index: 4, duration_minutes: 100 },
-        { id: 5, course_id: 1, title: 'Hands-On: Running rUv-swarm', slug: 'hands-on-ruv-swarm', description: 'Execute and analyze rUv-swarm programs', order_index: 5, duration_minutes: 120 },
-        // Practitioner
-        { id: 6, course_id: 2, title: 'Deep Dive: The FANN Library', slug: 'fann-library-deep-dive', description: 'Master the Fast Artificial Neural Network library', order_index: 1, duration_minutes: 180 },
-        { id: 7, course_id: 2, title: 'Code Walkthrough: fann_utils.c', slug: 'fann-utils-walkthrough', description: 'Analyze the rUv-swarm FANN wrapper functions', order_index: 2, duration_minutes: 120 },
-        // Architect
-        { id: 8, course_id: 3, title: 'Advanced Optimization Algorithms', slug: 'advanced-optimization', description: 'Beyond PSO: GA, ACO, and hybrid approaches', order_index: 1, duration_minutes: 150 }
-    ],
-    lessons: [
-        { id: 1, module_id: 1, title: 'What is a Neural Network?', slug: 'what-is-neural-network', description: 'Basic concepts and biological inspiration', duration_minutes: 30, order_index: 1 },
-        { id: 2, module_id: 1, title: 'Activation Functions', slug: 'activation-functions', description: 'The building blocks of network computation', duration_minutes: 25, order_index: 2 },
-        { id: 3, module_id: 2, title: 'Understanding XOR', slug: 'understanding-xor', description: 'Why XOR cannot be solved linearly', duration_minutes: 20, order_index: 1 },
-    ],
-    quizzes: [
-        { id: 1, module_id: 1, title: 'Neural Networks Basics Quiz', description: 'Test your understanding of fundamental concepts', time_limit_minutes: 15, passing_score: 70 },
-        { id: 2, module_id: 2, title: 'XOR Problem Quiz', description: 'Verify your grasp of the XOR challenge', time_limit_minutes: 10, passing_score: 80 }
-    ],
-    lesson_progress: [
-        { id: 1, user_id: 3, lesson_id: 1, progress_percentage: 100, started_at: '2024-01-15', completed_at: '2024-01-15' },
-        { id: 2, user_id: 3, lesson_id: 2, progress_percentage: 50, started_at: '2024-01-16', completed_at: null },
-        { id: 3, user_id: 4, lesson_id: 1, progress_percentage: 100, started_at: '2024-01-10', completed_at: '2024-01-10' },
-        { id: 4, user_id: 4, lesson_id: 2, progress_percentage: 100, started_at: '2024-01-11', completed_at: '2024-01-11' }
-    ]
-};
+// Remove hardcoded courseData - now using AppContext
 
 const ModuleItem = ({ module }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { setView, setSelectedLessonId, setSelectedQuizId, currentUser } = useContext(AppContext);
+    const { setView, setSelectedLessonId, setSelectedQuizId, currentUser, courseData } = useContext(AppContext);
     const lessons = courseData.lessons.filter(l => l.module_id === module.id).sort((a, b) => a.order_index - b.order_index);
     const quizzes = courseData.quizzes.filter(q => q.module_id === module.id);
 
@@ -116,7 +73,7 @@ const ModuleItem = ({ module }) => {
 };
 
 const CourseView = () => {
-    const { selectedCourseId, setView } = useContext(AppContext);
+    const { selectedCourseId, setView, courseData } = useContext(AppContext);
     const course = courseData.courses.find(c => c.id === selectedCourseId);
     const modules = courseData.modules.filter(m => m.course_id === course.id).sort((a, b) => a.order_index - b.order_index);
     const instructor = courseData.users.find(u => u.id === course.instructor_id);
