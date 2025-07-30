@@ -2303,7 +2303,7 @@ export const AdvancedPSODemo = () => {
                         <h5 className="font-semibold text-yellow-400 mb-2">Inertia Weight (w)</h5>
                         <p>Controls the influence of previous velocity. Higher values promote exploration, lower values encourage exploitation around current best positions.</p>
                         <ul className="mt-2 space-y-1 text-xs">
-                            <li>• w > 1.0: Divergent behavior</li>
+                            <li>• w &gt; 1.0: Divergent behavior</li>
                             <li>• w = 0.5-0.9: Balanced search</li>
                             <li>• w &lt; 0.4: Quick convergence</li>
                         </ul>
