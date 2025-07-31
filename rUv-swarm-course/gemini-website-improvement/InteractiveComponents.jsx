@@ -1101,3 +1101,693 @@ export const PerformanceOptimizationTools = () => (
     </div>
   </InteractiveContainer>
 );
+
+// Multi-Agent Systems Animations
+export const AgentCommunicationOverview = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        
+        // Agent communication visualization
+        const agents = Array.from({ length: 8 }, (_, i) => ({
+            x: Math.cos(i * Math.PI / 4) * 80 + width/2,
+            y: Math.sin(i * Math.PI / 4) * 80 + height/2,
+            id: i,
+            color: `hsl(${i * 45}, 70%, 60%)`,
+            messages: []
+        }));
+        
+        const animate = () => {
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw agents
+            agents.forEach(agent => {
+                ctx.beginPath();
+                ctx.arc(agent.x, agent.y, 12, 0, Math.PI * 2);
+                ctx.fillStyle = agent.color;
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Agent ID
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(agent.id, agent.x, agent.y + 4);
+            });
+            
+            // Animate messages between agents
+            if (Math.random() < 0.1) {
+                const sender = agents[Math.floor(Math.random() * agents.length)];
+                const receiver = agents[Math.floor(Math.random() * agents.length)];
+                if (sender !== receiver) {
+                    sender.messages.push({
+                        target: receiver,
+                        progress: 0,
+                        color: sender.color
+                    });
+                }
+            }
+            
+            // Draw and update messages
+            agents.forEach(agent => {
+                agent.messages = agent.messages.filter(message => {
+                    message.progress += 0.02;
+                    
+                    if (message.progress < 1) {
+                        const x = agent.x + (message.target.x - agent.x) * message.progress;
+                        const y = agent.y + (message.target.y - agent.y) * message.progress;
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fillStyle = message.color;
+                        ctx.fill();
+                        return true;
+                    }
+                    return false;
+                });
+            });
+            
+            // Draw connection lines
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)';
+            ctx.lineWidth = 1;
+            agents.forEach(agent => {
+                agents.forEach(other => {
+                    if (agent.id < other.id) {
+                        ctx.beginPath();
+                        ctx.moveTo(agent.x, agent.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Agent Communication Network" description="Watch agents communicate in a mesh network topology">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+export const SynchronousCommunication = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        let time = 0;
+        
+        const animate = () => {
+            time += 0.02;
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw timeline
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, height/2);
+            ctx.lineTo(width - 50, height/2);
+            ctx.stroke();
+            
+            // Draw agents
+            const agent1Y = height/2 - 60;
+            const agent2Y = height/2 + 60;
+            
+            // Agent 1
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(40, agent1Y - 10, 20, 20);
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.fillText('Agent 1', 10, agent1Y + 5);
+            
+            // Agent 2
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(40, agent2Y - 10, 20, 20);
+            ctx.fillText('Agent 2', 10, agent2Y + 5);
+            
+            // Synchronous message exchange
+            const phase = (time % 4);
+            if (phase < 1) {
+                // Send request
+                const progress = phase;
+                const x = 60 + progress * (width - 120);
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(x, agent1Y + 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Arrow
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(60, agent1Y + 10);
+                ctx.lineTo(x, agent2Y - 10);
+                ctx.stroke();
+            } else if (phase < 2) {
+                // Processing at Agent 2
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(width - 80, agent2Y - 15, 30, 30);
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText('Processing...', width - 75, agent2Y);
+            } else if (phase < 3) {
+                // Send response
+                const progress = phase - 2;
+                const x = width - 60 - progress * (width - 120);
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(x, agent2Y - 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Arrow
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(width - 60, agent2Y - 10);
+                ctx.lineTo(x, agent1Y + 10);
+                ctx.stroke();
+            } else {
+                // Wait for next cycle
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(40, agent1Y - 10, 20, 20);
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.fillText('✓', 47, agent1Y + 2);
+            }
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Synchronous Communication" description="Agent 1 waits for Agent 2's response before continuing">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+export const AsynchronousCommunication = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        let messages = [];
+        let time = 0;
+        
+        const animate = () => {
+            time += 0.02;
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw agents
+            const agents = [
+                { x: 60, y: height/3, color: '#3b82f6', name: 'Agent 1' },
+                { x: 60, y: 2*height/3, color: '#ef4444', name: 'Agent 2' },
+                { x: width - 60, y: height/2, color: '#10b981', name: 'Agent 3' }
+            ];
+            
+            agents.forEach(agent => {
+                ctx.fillStyle = agent.color;
+                ctx.fillRect(agent.x - 15, agent.y - 10, 30, 20);
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(agent.name.split(' ')[1], agent.x, agent.y + 4);
+                ctx.textAlign = 'left';
+            });
+            
+            // Generate messages
+            if (Math.random() < 0.05) {
+                const sender = agents[Math.floor(Math.random() * agents.length)];
+                const receiver = agents[Math.floor(Math.random() * agents.length)];
+                if (sender !== receiver) {
+                    messages.push({
+                        x: sender.x,
+                        y: sender.y,
+                        targetX: receiver.x,
+                        targetY: receiver.y,
+                        color: sender.color,
+                        progress: 0
+                    });
+                }
+            }
+            
+            // Update and draw messages
+            messages = messages.filter(msg => {
+                msg.progress += 0.015;
+                
+                if (msg.progress < 1) {
+                    msg.x = msg.x + (msg.targetX - msg.x) * 0.02;
+                    msg.y = msg.y + (msg.targetY - msg.y) * 0.02;
+                    
+                    ctx.fillStyle = msg.color;
+                    ctx.beginPath();
+                    ctx.arc(msg.x, msg.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    return true;
+                }
+                return false;
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Asynchronous Communication" description="Agents send messages without waiting for responses">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+export const CommunicationTopologyExplorer = ({ width = 400, height = 280 }) => {
+    const [topology, setTopology] = useState('mesh');
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        
+        const animate = () => {
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = 80;
+            const nodeCount = 6;
+            
+            // Generate node positions based on topology
+            const nodes = Array.from({ length: nodeCount }, (_, i) => ({
+                x: centerX + Math.cos(i * 2 * Math.PI / nodeCount) * radius,
+                y: centerY + Math.sin(i * 2 * Math.PI / nodeCount) * radius,
+                id: i
+            }));
+            
+            // Draw connections based on topology
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.lineWidth = 2;
+            
+            if (topology === 'mesh') {
+                // All-to-all connections
+                nodes.forEach(node1 => {
+                    nodes.forEach(node2 => {
+                        if (node1.id < node2.id) {
+                            ctx.beginPath();
+                            ctx.moveTo(node1.x, node1.y);
+                            ctx.lineTo(node2.x, node2.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+            } else if (topology === 'star') {
+                // Central hub connections
+                const center = { x: centerX, y: centerY };
+                nodes.forEach(node => {
+                    ctx.beginPath();
+                    ctx.moveTo(center.x, center.y);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+                });
+                
+                // Draw central node
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, 15, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (topology === 'ring') {
+                // Ring connections
+                nodes.forEach((node, i) => {
+                    const nextNode = nodes[(i + 1) % nodes.length];
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+                    ctx.lineTo(nextNode.x, nextNode.y);
+                    ctx.stroke();
+                });
+            }
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Node ID
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.id, node.x, node.y + 4);
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [topology, width, height]);
+    
+    return (
+        <InteractiveContainer title="Communication Topologies" description="Explore different network topologies for agent communication">
+            <div className="mb-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Topology:</label>
+                <select 
+                    value={topology} 
+                    onChange={(e) => setTopology(e.target.value)}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                >
+                    <option value="mesh">Mesh (All-to-All)</option>
+                    <option value="star">Star (Hub-and-Spoke)</option>
+                    <option value="ring">Ring (Circular)</option>
+                </select>
+            </div>
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+// Distributed AI Architecture Animations
+export const DistributedMLOverview = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        let time = 0;
+        
+        const animate = () => {
+            time += 0.01;
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw distributed workers
+            const workers = [
+                { x: 80, y: 80, name: 'Worker 1' },
+                { x: 320, y: 80, name: 'Worker 2' },
+                { x: 80, y: 200, name: 'Worker 3' },
+                { x: 320, y: 200, name: 'Worker 4' }
+            ];
+            
+            // Draw parameter server
+            const serverX = width / 2;
+            const serverY = height / 2;
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(serverX - 20, serverY - 15, 40, 30);
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Parameter', serverX, serverY - 5);
+            ctx.fillText('Server', serverX, serverY + 5);
+            
+            // Draw workers
+            workers.forEach((worker, i) => {
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(worker.x - 15, worker.y - 10, 30, 20);
+                ctx.fillStyle = '#fff';
+                ctx.font = '8px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(worker.name, worker.x, worker.y + 2);
+                
+                // Animate gradient flow
+                const phase = (time + i * 0.5) % 2;
+                if (phase < 1) {
+                    // Gradients to server
+                    const progress = phase;
+                    const x = worker.x + (serverX - worker.x) * progress;
+                    const y = worker.y + (serverY - worker.y) * progress;
+                    
+                    ctx.fillStyle = '#10b981';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Updated parameters from server
+                    const progress = phase - 1;
+                    const x = serverX + (worker.x - serverX) * progress;
+                    const y = serverY + (worker.y - serverY) * progress;
+                    
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Connection lines
+                ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(worker.x, worker.y);
+                ctx.lineTo(serverX, serverY);
+                ctx.stroke();
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Distributed ML Parameter Server" description="Workers send gradients to parameter server and receive updates">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+export const FederatedLearningOverview = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        let time = 0;
+        
+        const animate = () => {
+            time += 0.015;
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw federated server
+            const serverX = width / 2;
+            const serverY = 60;
+            
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(serverX - 25, serverY - 15, 50, 30);
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Fed Server', serverX, serverY + 2);
+            
+            // Draw client devices
+            const clients = [
+                { x: 80, y: 180, type: 'phone', color: '#3b82f6' },
+                { x: 160, y: 220, type: 'laptop', color: '#10b981' },
+                { x: 240, y: 220, type: 'tablet', color: '#f59e0b' },
+                { x: 320, y: 180, type: 'iot', color: '#ef4444' }
+            ];
+            
+            clients.forEach((client, i) => {
+                // Draw device
+                ctx.fillStyle = client.color;
+                if (client.type === 'phone') {
+                    ctx.fillRect(client.x - 8, client.y - 15, 16, 30);
+                } else if (client.type === 'laptop') {
+                    ctx.fillRect(client.x - 15, client.y - 10, 30, 20);
+                } else if (client.type === 'tablet') {
+                    ctx.fillRect(client.x - 12, client.y - 12, 24, 24);
+                }
+                
+                // Local data
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                for (let j = 0; j < 5; j++) {
+                    ctx.fillRect(client.x - 10 + j * 4, client.y + 20, 2, 8);
+                }
+                
+                // Animate federated learning rounds
+                const phase = (time + i * 0.3) % 3;
+                if (phase < 1) {
+                    // Model download
+                    const progress = phase;
+                    const x = serverX + (client.x - serverX) * progress;
+                    const y = serverY + (client.y - serverY) * progress;
+                    
+                    ctx.fillStyle = '#8b5cf6';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (phase < 2) {
+                    // Local training (pulsing effect)
+                    const pulse = Math.sin((phase - 1) * Math.PI * 8) * 0.5 + 0.5;
+                    ctx.fillStyle = `rgba(${client.color.includes('3b82') ? '59, 130, 246' : 
+                                        client.color.includes('10b9') ? '16, 185, 129' :
+                                        client.color.includes('f59e') ? '245, 158, 11' : '239, 68, 68'}, ${pulse})`;
+                    ctx.beginPath();
+                    ctx.arc(client.x, client.y, 20, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Model update upload
+                    const progress = phase - 2;
+                    const x = client.x + (serverX - client.x) * progress;
+                    const y = client.y + (serverY - client.y) * progress;
+                    
+                    ctx.fillStyle = client.color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Privacy shield
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(client.x, client.y, 25, 0, Math.PI * 2);
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Federated Learning Overview" description="Devices train locally while sharing model updates, not data">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};
+
+export const SwarmCloudOverview = ({ width = 400, height = 280 }) => {
+    const canvasRef = useRef(null);
+    
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+        let time = 0;
+        
+        const animate = () => {
+            time += 0.02;
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw cloud
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
+            ctx.beginPath();
+            ctx.arc(width/2 - 40, 80, 30, 0, Math.PI * 2);
+            ctx.arc(width/2, 70, 35, 0, Math.PI * 2);
+            ctx.arc(width/2 + 40, 80, 30, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw swarm agents in cloud
+            const agents = Array.from({ length: 12 }, (_, i) => ({
+                x: width/2 + Math.cos(i * Math.PI / 6 + time) * (30 + Math.sin(time + i) * 10),
+                y: 80 + Math.sin(i * Math.PI / 6 + time) * (20 + Math.cos(time + i) * 5),
+                color: `hsl(${(i * 30 + time * 50) % 360}, 70%, 60%)`
+            }));
+            
+            agents.forEach(agent => {
+                ctx.fillStyle = agent.color;
+                ctx.beginPath();
+                ctx.arc(agent.x, agent.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw containers/pods
+            const containers = [
+                { x: 60, y: 160, label: 'Pod 1' },
+                { x: 140, y: 180, label: 'Pod 2' },
+                { x: 220, y: 160, label: 'Pod 3' },
+                { x: 300, y: 180, label: 'Pod 4' },
+                { x: 100, y: 220, label: 'Pod 5' },
+                { x: 260, y: 220, label: 'Pod 6' }
+            ];
+            
+            containers.forEach(container => {
+                // Container box
+                ctx.fillStyle = '#e5e7eb';
+                ctx.fillRect(container.x - 15, container.y - 10, 30, 20);
+                ctx.strokeStyle = '#6b7280';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(container.x - 15, container.y - 10, 30, 20);
+                
+                // Container label
+                ctx.fillStyle = '#374151';
+                ctx.font = '8px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(container.label, container.x, container.y + 2);
+                
+                // Auto-scaling animation
+                const scale = 1 + Math.sin(time + container.x * 0.01) * 0.1;
+                ctx.save();
+                ctx.translate(container.x, container.y);
+                ctx.scale(scale, scale);
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+                ctx.fillRect(-15, -10, 30, 20);
+                ctx.restore();
+            });
+            
+            // Draw orchestration layer
+            ctx.fillStyle = '#8b5cf6';
+            ctx.fillRect(width/2 - 30, 120, 60, 15);
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Kubernetes', width/2, 130);
+            
+            // Service mesh connections
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+            ctx.lineWidth = 1;
+            containers.forEach(container => {
+                ctx.beginPath();
+                ctx.moveTo(width/2, 135);
+                ctx.lineTo(container.x, container.y - 10);
+                ctx.stroke();
+            });
+            
+            animationFrame = requestAnimationFrame(animate);
+        };
+        
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [width, height]);
+    
+    return (
+        <InteractiveContainer title="Cloud-Native Swarm Architecture" description="Swarm agents deployed as microservices with Kubernetes orchestration">
+            <canvas ref={canvasRef} width={width} height={height} className="border border-gray-300 rounded" />
+        </InteractiveContainer>
+    );
+};

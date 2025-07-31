@@ -15,7 +15,15 @@ import {
     SystemArchitectureVisualization,
     DistributedSystemAnimation,
     ScalabilityDemonstration,
-    PerformanceOptimizationTools
+    PerformanceOptimizationTools,
+    // New Multi-Agent Systems & Distributed AI animations
+    AgentCommunicationOverview,
+    SynchronousCommunication,
+    AsynchronousCommunication,
+    CommunicationTopologyExplorer,
+    DistributedMLOverview,
+    FederatedLearningOverview,
+    SwarmCloudOverview
 } from '../InteractiveComponents.jsx';
 
 // Component mapping for interactive elements
@@ -63,9 +71,37 @@ const componentMap = {
     'ScoutBeeExploration': SwarmIntelligenceDemo,
     'EmployedBeeForaging': SwarmIntelligenceDemo,
     'OnlookerBeeDecision': SwarmIntelligenceDemo,
-    'AgentCommunicationOverview': NetworkTopologyDemo,
-    'DirectMessagingDemo': NetworkTopologyDemo,
-    'BroadcastMessagingDemo': NetworkTopologyDemo
+    // Multi-Agent Systems Engineering animations
+    'AgentCommunicationOverview': AgentCommunicationOverview,
+    'SynchronousCommunication': SynchronousCommunication,
+    'AsynchronousCommunication': AsynchronousCommunication,
+    'CommunicationTopologyExplorer': CommunicationTopologyExplorer,
+    'CoordinationProtocolsOverview': AgentCommunicationOverview,
+    'DirectMessagingDemo': SynchronousCommunication,
+    'BroadcastMessagingDemo': AsynchronousCommunication,
+    'MarketBasedAllocation': CommunicationTopologyExplorer,
+    'HierarchicalTaskAssignment': CommunicationTopologyExplorer,
+    // Distributed AI Architecture animations
+    'DistributedMLOverview': DistributedMLOverview,
+    'FederatedLearningOverview': FederatedLearningOverview,
+    'SwarmCloudOverview': SwarmCloudOverview,
+    'ParameterServerDemo': DistributedMLOverview,
+    'ScalableTrainingDemo': DistributedMLOverview,
+    'FederatedTrainingDemo': FederatedLearningOverview,
+    'PrivacyPreservingDemo': FederatedLearningOverview,
+    'CloudNativeSwarmDemo': SwarmCloudOverview,
+    'KubernetesOrchestrationDemo': SwarmCloudOverview,
+    'LargeScaleDeepLearning': DistributedMLOverview,
+    // Additional component mappings for comprehensive coverage
+    'BarrierSynchronization': SynchronousCommunication,
+    'ClockSynchronization': AsynchronousCommunication,
+    'LoadBalancingDemo': DistributedMLOverview,
+    'FaultToleranceDemo': SwarmCloudOverview,
+    'ConsensusAlgorithmDemo': CommunicationTopologyExplorer,
+    'ByzantineFaultToleranceDemo': CommunicationTopologyExplorer,
+    'DataPartitioningStrategies': DistributedMLOverview,
+    'ModelParallelismDemo': DistributedMLOverview,
+    'DataParallelismDemo': DistributedMLOverview
 };
 
 // Parse content and extract components
