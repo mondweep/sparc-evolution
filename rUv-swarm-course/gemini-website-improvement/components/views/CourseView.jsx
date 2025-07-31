@@ -21,6 +21,7 @@ const ModuleItem = ({ module }) => {
     };
 
     const getLessonStatus = (lessonId) => {
+        if (!currentUser || !courseData.lesson_progress) return 'not_started';
         const progress = courseData.lesson_progress.find(lp => lp.user_id === currentUser.id && lp.lesson_id === lessonId);
         if (!progress) return 'not_started';
         if (progress.progress_percentage === 100) return 'completed';

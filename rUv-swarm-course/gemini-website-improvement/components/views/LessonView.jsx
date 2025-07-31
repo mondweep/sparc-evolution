@@ -30,7 +30,7 @@ const SimpleMarkdown = ({ content, lessonSlug }) => {
     const containerRef = useRef(null);
 
     useEffect(() => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !content) return;
 
         // Simple markdown parsing - convert headers, code blocks, etc.
         let html = content
@@ -41,42 +41,80 @@ const SimpleMarkdown = ({ content, lessonSlug }) => {
             .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
             .replace(/`(.*?)`/g, '<code class="bg-gray-800 px-2 py-1 rounded text-sm font-mono text-green-300">$1</code>')
             .replace(/```([\\s\\S]*?)```/g, '<pre class="bg-black p-4 rounded-lg overflow-x-auto mb-4"><code class="text-green-300 font-mono text-sm">$1</code></pre>')
-            .replace(/\\n/g, '<br>');
+            .replace(/\n/g, '<br>')
+            // Convert JSX-style components to HTML divs with IDs
+            .replace(/<([A-Z][a-zA-Z]*)\s*\/>/g, '<div id="$1" class="my-6"></div>')
+            // Handle LaTeX math expressions
+            .replace(/\$\$([^$]+)\$\$/g, '<div class="math-block bg-gray-900 p-4 rounded-lg my-4 text-center text-white font-mono">$1</div>')
+            .replace(/\$([^$]+)\$/g, '<span class="math-inline bg-gray-800 px-2 py-1 rounded text-sm font-mono text-green-300">$1</span>');
 
         // Handle interactive component divs
         const componentMap = {
-            'interactive-neural-network': InteractiveNeuralNetwork,
-            'interactive-xor': InteractiveXOR,
-            'swarm-intelligence-demo': SwarmIntelligenceDemo,
-            'pso-visualization': PSOVisualization,
-            'advanced-pso-demo': AdvancedPSODemo,
-            'ruv-swarm-simulation': RuvSwarmSimulation,
-            'network-topology-demo': NetworkTopologyDemo,
-            'activation-function-demo': ActivationFunctionDemo,
-            'fann-utils-demo': FANNUtilsDemo,
-            'genetic-algorithm-demo': GeneticAlgorithmDemo,
-            'advanced-deep-network-visualization': AdvancedDeepNetworkVisualization,
-            'advanced-rl-environment': AdvancedRLEnvironment,
-            'system-architecture-visualization': SystemArchitectureVisualization,
-            'distributed-system-animation': DistributedSystemAnimation,
-            'scalability-demonstration': ScalabilityDemonstration,
-            'performance-optimization-tools': PerformanceOptimizationTools
+            'InteractiveSwarmSimulation': SwarmIntelligenceDemo,
+            'SwarmBehaviorSimulator': SwarmIntelligenceDemo,
+            'ParticleSwarmVisualization': PSOVisualization,
+            'InteractiveSwarmBuilder': SwarmIntelligenceDemo,
+            'EmergentPatternsDemo': SwarmIntelligenceDemo,
+            'GameOfLifeSimulator': SwarmIntelligenceDemo,
+            'BoidsSimulation': SwarmIntelligenceDemo,
+            'EmergenceParameterLab': SwarmIntelligenceDemo,
+            'ComplexityEvolutionVisualizer': SwarmIntelligenceDemo,
+            'BiologicalNeuronAnimation': InteractiveNeuralNetwork,
+            'InteractivePerceptron': InteractiveNeuralNetwork,
+            'ActivationFunctionExplorer': ActivationFunctionDemo,
+            'PerceptronLearningVisualization': InteractiveNeuralNetwork,
+            'PerceptronTrainer': InteractiveNeuralNetwork,
+            'LinearSeparabilityDemo': InteractiveNeuralNetwork,
+            'InteractiveNeuralNetwork': InteractiveNeuralNetwork,
+            'NetworkArchitectureBuilder': InteractiveNeuralNetwork,
+            'ForwardPropagationAnimation': InteractiveNeuralNetwork,
+            'BackpropagationVisualizer': InteractiveNeuralNetwork,
+            'NeuralNetworkPlayground': InteractiveNeuralNetwork,
+            'RealTimeTrainingVisualizer': InteractiveNeuralNetwork,
+            'XORProblemVisualization': InteractiveXOR,
+            'LinearSeparabilityXOR': InteractiveXOR,
+            'XORSolutionNetwork': InteractiveXOR,
+            'InteractiveXORSolver': InteractiveXOR,
+            'XORSpaceTransformation': InteractiveXOR,
+            'AntColonyVisualization': SwarmIntelligenceDemo,
+            'PheromoneTrailSimulation': SwarmIntelligenceDemo,
+            'ShortestPathDiscovery': SwarmIntelligenceDemo,
+            'InteractiveAntColony': SwarmIntelligenceDemo,
+            'RealAntBehaviorData': SwarmIntelligenceDemo,
+            'ACOAlgorithmFlowchart': SwarmIntelligenceDemo,
+            'BirdFlockingSimulation': PSOVisualization,
+            'PersonalBestVisualization': PSOVisualization,
+            'GlobalBestVisualization': PSOVisualization,
+            'VelocityUpdateAnimation': PSOVisualization,
+            'ExplorationExploitationBalance': PSOVisualization,
+            'ConvergencePatternAnalysis': PSOVisualization,
+            'ParticleSwarmOptimization': PSOVisualization,
+            'WaggleDanceAnimation': SwarmIntelligenceDemo,
+            'ScoutBeeExploration': SwarmIntelligenceDemo,
+            'EmployedBeeForaging': SwarmIntelligenceDemo,
+            'OnlookerBeeDecision': SwarmIntelligenceDemo,
+            'AgentCommunicationOverview': NetworkTopologyDemo,
+            'DirectMessagingDemo': NetworkTopologyDemo,
+            'BroadcastMessagingDemo': NetworkTopologyDemo
         };
 
         containerRef.current.innerHTML = html;
 
         // Mount interactive components
-        Object.entries(componentMap).forEach(([id, Component]) => {
-            const element = containerRef.current.querySelector(`#${id}`);
+        Object.entries(componentMap).forEach(([componentName, Component]) => {
+            const element = containerRef.current.querySelector(`#${componentName}`);
             if (element && Component) {
                 // Create React component and mount it
                 const root = document.createElement('div');
                 element.appendChild(root);
-                // Note: In a real implementation, you'd use ReactDOM.render or createRoot
-                // For now, we'll just add a placeholder
-                root.innerHTML = `<div class="bg-gray-800 p-6 rounded-lg text-center">
-                    <p class="text-blue-300">Interactive Component: ${Component.name || id}</p>
-                    <p class="text-gray-400 text-sm mt-2">Component would be rendered here</p>
+                // Add a styled placeholder for the interactive component
+                root.innerHTML = `<div class="bg-gradient-to-r from-blue-800 to-purple-800 p-6 rounded-lg text-center border-2 border-blue-600 shadow-lg">
+                    <div class="flex items-center justify-center mb-3">
+                        <div class="w-4 h-4 bg-blue-400 rounded-full animate-pulse mr-2"></div>
+                        <p class="text-blue-200 font-semibold text-lg">${componentName}</p>
+                    </div>
+                    <p class="text-gray-300 text-sm">Interactive ${Component.name || 'Animation'} Component</p>
+                    <p class="text-gray-400 text-xs mt-2">🎮 Interactive elements will be rendered here</p>
                 </div>`;
             }
         });
@@ -88,15 +126,34 @@ const SimpleMarkdown = ({ content, lessonSlug }) => {
 
 const LessonView = () => {
     const { selectedLessonId, setView, setSelectedLessonId, setSelectedCourseId, courseData } = useContext(AppContext);
+    
+    if (!courseData || !courseData.lessons || !selectedLessonId) {
+        return (
+            <div className="bg-gray-800 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+                <p>No lesson selected</p>
+            </div>
+        );
+    }
+    
     const lesson = courseData.lessons.find(l => l.id === selectedLessonId);
-    const module = courseData.modules.find(m => m.id === lesson.module_id);
-    const course = courseData.courses.find(c => c.id === module.course_id);
-    const exercises = courseData.code_exercises.filter(e => e.lesson_id === lesson.id);
-    const allLessonsInModule = courseData.lessons.filter(l => l.module_id === module.id).sort((a,b) => a.order_index - b.order_index);
+    if (!lesson) {
+        return (
+            <div className="bg-gray-800 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+                <p>Lesson not found</p>
+            </div>
+        );
+    }
+    
+    const module = courseData.modules ? courseData.modules.find(m => m.id === lesson.module_id) : null;
+    const course = module && courseData.courses ? courseData.courses.find(c => c.id === module.course_id) : null;
+    const exercises = courseData.code_exercises ? courseData.code_exercises.filter(e => e.lesson_id === lesson.id) : [];
+    const allLessonsInModule = courseData.lessons && module ? courseData.lessons.filter(l => l.module_id === module.id).sort((a,b) => a.order_index - b.order_index) : [];
     const currentIndex = allLessonsInModule.findIndex(l => l.id === lesson.id);
 
     const goToCourseView = () => {
-        setSelectedCourseId(course.id);
+        if (course) {
+            setSelectedCourseId(course.id);
+        }
         setView('course');
     };
     
@@ -115,7 +172,7 @@ const LessonView = () => {
                 <h2 className="text-4xl font-extrabold mb-2 text-white">{lesson.title}</h2>
                 <p className="text-gray-400 mb-6">{lesson.description}</p>
                 <div className="border-t border-gray-700 pt-6">
-                    <SimpleMarkdown content={lesson.content_markdown} lessonSlug={lesson.slug} />
+                    <SimpleMarkdown content={lesson.content} lessonSlug={lesson.slug} />
                 </div>
                 {exercises.length > 0 && (
                     <div className="mt-12">
