@@ -87,9 +87,12 @@ const CourseView = () => {
             </button>
             <div className="bg-gray-800 rounded-xl shadow-2xl p-8 mb-8">
                 <h2 className="text-5xl font-extrabold mb-4 text-white">{course.title}</h2>
-                <div className="flex items-center space-x-2 text-gray-400 mb-6">
-                    <User size={16} />
-                    <span>Instructor: {instructor.firstName} {instructor.lastName}</span>
+                <div className="space-y-2 text-gray-400 mb-6">
+                    <div className="flex items-center space-x-2">
+                        <User size={16} />
+                        <span>{instructor.firstName} {instructor.lastName}</span>
+                    </div>
+                    <p className="text-sm text-gray-500 ml-6">{instructor.bio}</p>
                 </div>
                 <p className="text-lg text-gray-300 mb-6">{course.description}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-300">
