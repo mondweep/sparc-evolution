@@ -20,6 +20,7 @@ import Module2 from './components/Module2'
 import Module3 from './components/Module3'
 import Module4 from './components/Module4'
 import Module5 from './components/Module5'
+import Module6 from './components/Module6'
 import Quiz from './components/Quiz'
 import Progress from './components/Progress'
 
@@ -32,6 +33,7 @@ function App() {
     module3: false,
     module4: false,
     module5: false,
+    module6: false,
     quiz: false
   })
 
@@ -42,6 +44,7 @@ function App() {
     { id: 'module3', title: 'MCP Tools & Coordination', icon: Settings, component: Module3 },
     { id: 'module4', title: 'Swarm Orchestration', icon: Users, component: Module4 },
     { id: 'module5', title: 'Advanced Configuration', icon: Code2, component: Module5 },
+    { id: 'module6', title: 'Configuration Mastery', icon: Settings, component: Module6 },
     { id: 'quiz', title: 'Final Assessment', icon: Award, component: Quiz }
   ]
 
@@ -136,6 +139,9 @@ function App() {
               <div>
                 <Zap size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 2.8-4.4x Speed Gain
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '0.8em', opacity: '0.8' }}>
+                Now with Configuration Mastery!
               </div>
             </div>
           </div>
