@@ -1,0 +1,15 @@
+# Redirects for client-side routing
+/*    /index.html   200
+
+# API redirects (if you have any API endpoints)
+/api/*  /api/:splat  200
+
+# Force HTTPS (optional)
+http://ruv-swarm-learning.netlify.app/*  https://ruv-swarm-learning.netlify.app/:splat  301!
+
+# Handle common file extensions
+/*.js   /:splat.js   200
+/*.css  /:splat.css  200
+/*.png  /:splat.png  200
+/*.jpg  /:splat.jpg  200
+/*.svg  /:splat.svg  200

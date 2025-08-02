@@ -1,0 +1,73 @@
+# FastAPI and ASGI server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Database
+sqlalchemy[asyncio]==2.0.23
+asyncpg==0.29.0  # PostgreSQL async driver
+psycopg2-binary==2.9.9  # PostgreSQL sync driver (for migrations)
+
+# Authentication and Security
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+
+# Configuration and Environment
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Logging
+python-json-logger==2.0.7
+
+# System monitoring
+psutil==5.9.6
+
+# HTTP client (for external API calls)
+httpx==0.25.2
+
+# Validation
+email-validator==2.1.0
+
+# CORS middleware
+starlette==0.27.0
+
+# Development dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Optional: Redis support (uncomment if using Redis)
+# redis==5.0.1
+# aioredis==2.0.1
+
+# Optional: Celery for background tasks (uncomment if needed)
+# celery==5.3.4
+
+# Optional: Email support (uncomment if using email features)
+# fastapi-mail==1.4.1
+
+# Optional: File upload support
+# python-magic==0.4.27
+# pillow==10.1.0
+
+# PDF generation for exports
+reportlab==4.0.7
+
+# Optional: Rate limiting
+# slowapi==0.1.9
+
+# Optional: Caching
+# aiocache==0.12.2
+
+# Testing utilities
+factory-boy==3.3.0
+faker==20.1.0
+
+# Documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.8

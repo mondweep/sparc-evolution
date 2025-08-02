@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ruv-swarm-learning.netlify.app/sitemap.xml
+
+# Disallow admin or sensitive areas if any
+# Disallow: /admin
+# Disallow: /api
+
+# Allow search engines to index the learning content
+Allow: /courses
+Allow: /lessons
+Allow: /modules
