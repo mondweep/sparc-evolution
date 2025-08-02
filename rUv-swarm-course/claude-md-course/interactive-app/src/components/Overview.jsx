@@ -96,7 +96,19 @@ const Overview = ({ onComplete, isCompleted, onNavigate }) => {
       {/* Performance Metrics */}
       <div className="lesson-card">
         <h2>Performance Impact</h2>
-        <p>Students who master Claude Flow configuration achieve remarkable improvements:</p>
+        <p>Students who master <a 
+          href="https://github.com/ruvnet/claude-flow" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            color: '#0066cc',
+            textDecoration: 'none',
+            borderBottom: '1px solid transparent',
+            transition: 'border-bottom-color 0.3s ease'
+          }}
+          onMouseEnter={(e) => e.target.style.borderBottomColor = '#0066cc'}
+          onMouseLeave={(e) => e.target.style.borderBottomColor = 'transparent'}
+        >Claude Flow</a> configuration achieve remarkable improvements:</p>
         
         <div className="stats-grid">
           {metrics.map((metric, index) => {
