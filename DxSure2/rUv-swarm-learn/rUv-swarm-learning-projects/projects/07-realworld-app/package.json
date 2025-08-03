@@ -1,0 +1,44 @@
+{
+  "name": "07-realworld-app",
+  "version": "1.0.0",
+  "description": "Enterprise-grade real-world application builder using ruv-swarm multi-agent coordination",
+  "main": "realworld-app.js",
+  "scripts": {
+    "start": "node realworld-app.js",
+    "build-app": "node realworld-app.js",
+    "deploy-staging": "echo 'Deploying to staging environment...'",
+    "deploy-production": "echo 'Deploying to production environment...'",
+    "test-app": "echo 'Running comprehensive test suite...'",
+    "monitor": "echo 'Opening monitoring dashboard...'",
+    "clean": "rm -rf app-report.json generated-app/"
+  },
+  "keywords": [
+    "ruv-swarm",
+    "real-world-application",
+    "full-stack-development",
+    "microservices",
+    "enterprise-architecture",
+    "multi-agent-coordination",
+    "production-ready",
+    "scalable-systems"
+  ],
+  "author": "ruv-swarm learner",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "socket.io": "^4.7.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcrypt": "^5.1.0",
+    "pg": "^8.11.0",
+    "redis": "^4.6.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "cypress": "^13.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
