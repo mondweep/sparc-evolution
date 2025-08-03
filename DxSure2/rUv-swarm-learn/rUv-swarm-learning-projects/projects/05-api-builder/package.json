@@ -1,0 +1,16 @@
+{
+  "name": "05-api-builder",
+  "version": "1.0.0",
+  "description": "Automated REST API generation using ruv-swarm multi-agent coordination",
+  "main": "api-builder.js",
+  "scripts": {
+    "start": "node api-builder.js",
+    "build-api": "node api-builder.js",
+    "test-generated": "cd generated-api && npm test",
+    "run-generated": "cd generated-api && npm run dev",
+    "clean": "rm -rf generated-api build-report.json"
+  },
+  "keywords": ["ruv-swarm", "api-generation", "rest-api", "multi-agent", "automation", "development"],
+  "author": "ruv-swarm learner",
+  "license": "MIT"
+}

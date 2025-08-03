@@ -1,0 +1,270 @@
+{
+  "sessionId": "analysis-1754256200581",
+  "timestamp": "2025-08-03T21:24:07.414Z",
+  "files": [
+    {
+      "filename": "sample-user-auth.js",
+      "issues": [
+        {
+          "type": "security",
+          "severity": "high",
+          "title": "Empty Database Password",
+          "description": "Database connection uses empty password, exposing system to unauthorized access",
+          "line": 14,
+          "agent": "SecurityAuditor"
+        },
+        {
+          "type": "security",
+          "severity": "medium",
+          "title": "Information Disclosure",
+          "description": "Error messages exposed to console may leak sensitive information",
+          "line": 21,
+          "agent": "SecurityAuditor"
+        }
+      ],
+      "suggestions": [
+        {
+          "type": "security",
+          "title": "Use Parameterized Queries",
+          "description": "Replace string concatenation with parameterized queries to prevent SQL injection",
+          "example": "const query = \"SELECT * FROM users WHERE username = ? AND password = ?\";"
+        },
+        {
+          "type": "maintainability",
+          "title": "Extract Constants",
+          "description": "Replace magic numbers with named constants",
+          "example": "const DISCOUNT_THRESHOLD_HIGH = 1000; const DISCOUNT_RATE_HIGH = 0.1;"
+        },
+        {
+          "type": "architecture",
+          "title": "Implement Repository Pattern",
+          "description": "Separate business logic from data access using repository pattern",
+          "example": "class OrderRepository { async updateStatus(orderId, status) { /* database logic */ } }"
+        }
+      ],
+      "metrics": {}
+    },
+    {
+      "filename": "sample-data-processor.js",
+      "issues": [
+        {
+          "type": "performance",
+          "severity": "high",
+          "title": "O(n²) Algorithm Complexity",
+          "description": "Nested loops create quadratic time complexity, inefficient for large datasets",
+          "line": 11,
+          "agent": "PerformanceOptimizer"
+        },
+        {
+          "type": "performance",
+          "severity": "medium",
+          "title": "Synchronous File I/O",
+          "description": "Blocking file operations can cause performance bottlenecks",
+          "line": 25,
+          "agent": "PerformanceOptimizer"
+        },
+        {
+          "type": "maintainability",
+          "severity": "medium",
+          "title": "Magic Numbers",
+          "description": "Hard-coded numbers should be replaced with named constants",
+          "line": 1,
+          "agent": "CodeQualityExpert"
+        }
+      ],
+      "suggestions": [
+        {
+          "type": "performance",
+          "title": "Use Set for Duplicate Detection",
+          "description": "Replace O(n²) nested loops with Set-based approach for O(n) complexity",
+          "example": "const seen = new Set(); const duplicates = arr.filter(item => seen.has(item) ? true : (seen.add(item), false));"
+        },
+        {
+          "type": "maintainability",
+          "title": "Extract Constants",
+          "description": "Replace magic numbers with named constants",
+          "example": "const DISCOUNT_THRESHOLD_HIGH = 1000; const DISCOUNT_RATE_HIGH = 0.1;"
+        },
+        {
+          "type": "architecture",
+          "title": "Implement Repository Pattern",
+          "description": "Separate business logic from data access using repository pattern",
+          "example": "class OrderRepository { async updateStatus(orderId, status) { /* database logic */ } }"
+        }
+      ],
+      "metrics": {}
+    },
+    {
+      "filename": "sample-order-manager.js",
+      "issues": [
+        {
+          "type": "maintainability",
+          "severity": "medium",
+          "title": "Magic Numbers",
+          "description": "Hard-coded numbers should be replaced with named constants",
+          "line": 1,
+          "agent": "CodeQualityExpert"
+        },
+        {
+          "type": "maintainability",
+          "severity": "low",
+          "title": "Poor Variable Naming",
+          "description": "Parameter name \"o\" is not descriptive",
+          "line": 3,
+          "agent": "CodeQualityExpert"
+        },
+        {
+          "type": "architecture",
+          "severity": "medium",
+          "title": "Tight Coupling",
+          "description": "Business logic directly accesses database layer",
+          "line": 35,
+          "agent": "ArchitectureReviewer"
+        },
+        {
+          "type": "architecture",
+          "severity": "low",
+          "title": "Global State",
+          "description": "Global variables make code harder to test and maintain",
+          "line": 42,
+          "agent": "ArchitectureReviewer"
+        }
+      ],
+      "suggestions": [
+        {
+          "type": "maintainability",
+          "title": "Extract Constants",
+          "description": "Replace magic numbers with named constants",
+          "example": "const DISCOUNT_THRESHOLD_HIGH = 1000; const DISCOUNT_RATE_HIGH = 0.1;"
+        },
+        {
+          "type": "architecture",
+          "title": "Implement Repository Pattern",
+          "description": "Separate business logic from data access using repository pattern",
+          "example": "class OrderRepository { async updateStatus(orderId, status) { /* database logic */ } }"
+        }
+      ],
+      "metrics": {}
+    },
+    {
+      "filename": "sample-inventory-manager.js",
+      "issues": [
+        {
+          "type": "bug",
+          "severity": "high",
+          "title": "Null Pointer Exception Risk",
+          "description": "Array initialized as null but used without null checking",
+          "line": 5,
+          "agent": "BugHunter"
+        },
+        {
+          "type": "bug",
+          "severity": "medium",
+          "title": "Type Coercion Bug Risk",
+          "description": "Using == instead of === can cause unexpected type coercion",
+          "line": 16,
+          "agent": "BugHunter"
+        }
+      ],
+      "suggestions": [
+        {
+          "type": "maintainability",
+          "title": "Extract Constants",
+          "description": "Replace magic numbers with named constants",
+          "example": "const DISCOUNT_THRESHOLD_HIGH = 1000; const DISCOUNT_RATE_HIGH = 0.1;"
+        },
+        {
+          "type": "bug",
+          "title": "Initialize Array Properly",
+          "description": "Initialize items as empty array instead of null",
+          "example": "this.items = [];"
+        },
+        {
+          "type": "architecture",
+          "title": "Implement Repository Pattern",
+          "description": "Separate business logic from data access using repository pattern",
+          "example": "class OrderRepository { async updateStatus(orderId, status) { /* database logic */ } }"
+        }
+      ],
+      "metrics": {}
+    }
+  ],
+  "agents": [
+    {
+      "type": "security",
+      "name": "SecurityAuditor",
+      "role": "Identifies security vulnerabilities and risks",
+      "expertise": [
+        "SQL injection",
+        "XSS",
+        "authentication",
+        "data validation"
+      ],
+      "patterns": []
+    },
+    {
+      "type": "performance",
+      "name": "PerformanceOptimizer",
+      "role": "Analyzes performance bottlenecks and inefficiencies",
+      "expertise": [
+        "algorithmic complexity",
+        "memory usage",
+        "database queries",
+        "caching"
+      ],
+      "patterns": []
+    },
+    {
+      "type": "maintainability",
+      "name": "CodeQualityExpert",
+      "role": "Evaluates code maintainability and best practices",
+      "expertise": [
+        "code structure",
+        "naming conventions",
+        "documentation",
+        "design patterns"
+      ],
+      "patterns": []
+    },
+    {
+      "type": "bugs",
+      "name": "BugHunter",
+      "role": "Detects potential bugs and logical errors",
+      "expertise": [
+        "null pointers",
+        "race conditions",
+        "edge cases",
+        "error handling"
+      ],
+      "patterns": []
+    },
+    {
+      "type": "architecture",
+      "name": "ArchitectureReviewer",
+      "role": "Evaluates overall system design and patterns",
+      "expertise": [
+        "design patterns",
+        "separation of concerns",
+        "scalability",
+        "modularity"
+      ],
+      "patterns": []
+    },
+    {
+      "type": "coordinator",
+      "name": "ReviewCoordinator",
+      "role": "Orchestrates analysis and synthesizes findings",
+      "expertise": [
+        "prioritization",
+        "reporting",
+        "team coordination"
+      ],
+      "patterns": []
+    }
+  ],
+  "summary": {
+    "totalFiles": 4,
+    "totalIssues": 11,
+    "agentCount": 6
+  }
+}

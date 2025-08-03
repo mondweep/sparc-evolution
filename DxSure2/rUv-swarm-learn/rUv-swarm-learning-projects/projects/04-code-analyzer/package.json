@@ -1,0 +1,15 @@
+{
+  "name": "04-code-analyzer",
+  "version": "1.0.0",
+  "description": "Multi-agent code review and analysis system using ruv-swarm",
+  "main": "code-analyzer.js",
+  "scripts": {
+    "start": "node code-analyzer.js",
+    "analyze": "node code-analyzer.js",
+    "clean": "rm -f sample-*.js analysis-report.json",
+    "show-report": "cat analysis-report.json | jq ."
+  },
+  "keywords": ["ruv-swarm", "code-analysis", "code-review", "multi-agent", "security", "performance"],
+  "author": "ruv-swarm learner",
+  "license": "MIT"
+}

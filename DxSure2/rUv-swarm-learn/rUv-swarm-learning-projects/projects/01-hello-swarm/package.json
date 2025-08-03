@@ -1,0 +1,17 @@
+{
+  "name": "01-hello-swarm",
+  "version": "1.0.0",
+  "description": "Your first ruv-swarm application - Learn the basics",
+  "main": "hello-swarm.js",
+  "scripts": {
+    "start": "node hello-swarm.js",
+    "test-mesh": "npx ruv-swarm swarm init --topology mesh --max-agents 3",
+    "test-star": "npx ruv-swarm swarm init --topology star --max-agents 3",
+    "test-hierarchical": "npx ruv-swarm swarm init --topology hierarchical --max-agents 3",
+    "status": "npx ruv-swarm swarm status",
+    "list-agents": "npx ruv-swarm agent list"
+  },
+  "keywords": ["ruv-swarm", "learning", "tutorial", "swarm", "ai-agents"],
+  "author": "ruv-swarm learner",
+  "license": "MIT"
+}

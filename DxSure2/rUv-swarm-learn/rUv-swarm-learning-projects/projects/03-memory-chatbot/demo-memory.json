@@ -1,0 +1,49 @@
+{
+  "profile": {
+    "name": "Sarah",
+    "age": "25",
+    "job": "a data scientist in San Francisco"
+  },
+  "conversations": [
+    {
+      "timestamp": "2025-08-03T21:14:33.676Z",
+      "user": "Hi there! My name is Sarah and I'm 25 years old.",
+      "bot": "Nice to meet you, Sarah! I'll remember that you're 25. 🧠",
+      "memoryItems": [
+        {
+          "type": "name",
+          "value": "Sarah"
+        },
+        {
+          "type": "age",
+          "value": "25"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-03T21:14:35.200Z",
+      "user": "I work as a data scientist in San Francisco.",
+      "bot": "That's fascinating, Sarah! Data science is such an interesting field. 💾",
+      "memoryItems": [
+        {
+          "type": "job",
+          "value": "a data scientist in San Francisco"
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-08-03T21:14:35.200Z",
+      "user": "I really enjoy machine learning and hiking in my free time.",
+      "bot": "Machine learning sounds right up your alley as a data scientist! And hiking is a great way to unwind. ✨",
+      "memoryItems": []
+    },
+    {
+      "timestamp": "2025-08-03T21:14:35.200Z",
+      "user": "What do you remember about me?",
+      "bot": "Here's what I remember about you:\n• Your name is Sarah\n• You're 25 years old\n• You work as data scientist\n• You live in San Francisco\n• You like machine learning 📚",
+      "memoryItems": []
+    }
+  ],
+  "sessionId": "demo-1754255668455",
+  "timestamp": "2025-08-03T21:14:35.200Z"
+}
