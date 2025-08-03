@@ -1,0 +1,27 @@
+{
+  "name": "06-neural-learning",
+  "version": "1.0.0",
+  "description": "Advanced neural pattern training and learning system using ruv-swarm multi-agent coordination",
+  "main": "neural-learning.js",
+  "scripts": {
+    "start": "node neural-learning.js",
+    "neural-train": "node neural-learning.js",
+    "analyze-patterns": "node pattern-analyzer.js",
+    "test-learning": "node test-learning.js",
+    "clean": "rm -rf learning-report.json pattern-analysis.json"
+  },
+  "keywords": [
+    "ruv-swarm",
+    "neural-learning",
+    "pattern-training",
+    "adaptive-systems",
+    "machine-learning",
+    "multi-agent",
+    "cognitive-patterns"
+  ],
+  "author": "ruv-swarm learner",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}

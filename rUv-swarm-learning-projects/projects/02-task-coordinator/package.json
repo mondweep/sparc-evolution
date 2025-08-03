@@ -1,0 +1,15 @@
+{
+  "name": "02-task-coordinator",
+  "version": "1.0.0",
+  "description": "Multi-agent task orchestration with ruv-swarm",
+  "main": "task-coordinator.js",
+  "scripts": {
+    "start": "node task-coordinator.js",
+    "demo-mesh": "node task-coordinator.js --topology mesh",
+    "demo-star": "node task-coordinator.js --topology star",
+    "demo-ring": "node task-coordinator.js --topology ring"
+  },
+  "keywords": ["ruv-swarm", "task-coordination", "multi-agent", "orchestration"],
+  "author": "ruv-swarm learner",
+  "license": "MIT"
+}
