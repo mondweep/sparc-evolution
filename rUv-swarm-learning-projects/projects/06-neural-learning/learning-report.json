@@ -1,0 +1,229 @@
+{
+  "sessionId": "neural-1754258057950",
+  "timestamp": "2025-08-03T21:54:44.399Z",
+  "metrics": {
+    "startTime": 1754258057950,
+    "tasksCompleted": 5,
+    "patternsLearned": 21,
+    "performanceImprovement": 113.13172727711819,
+    "totalDuration": 26449,
+    "learningEfficiency": 0.7939808688419221
+  },
+  "agents": [
+    {
+      "type": "pattern_detector",
+      "name": "PatternDetector",
+      "role": "Identifies recurring patterns in agent behaviors",
+      "expertise": [
+        "pattern recognition",
+        "behavior analysis",
+        "trend detection"
+      ],
+      "learningFocus": "behavioral_patterns",
+      "patternsGenerated": 1
+    },
+    {
+      "type": "performance_analyzer",
+      "name": "PerformanceAnalyzer",
+      "role": "Measures and tracks agent performance improvements",
+      "expertise": [
+        "metrics analysis",
+        "performance tracking",
+        "optimization"
+      ],
+      "learningFocus": "performance_optimization",
+      "patternsGenerated": 1
+    },
+    {
+      "type": "adaptation_specialist",
+      "name": "AdaptationSpecialist",
+      "role": "Develops improved strategies based on learnings",
+      "expertise": [
+        "strategy adaptation",
+        "workflow optimization",
+        "process improvement"
+      ],
+      "learningFocus": "strategy_adaptation",
+      "patternsGenerated": 1
+    },
+    {
+      "type": "neural_trainer",
+      "name": "NeuralTrainer",
+      "role": "Trains and refines neural patterns",
+      "expertise": [
+        "neural networks",
+        "pattern training",
+        "weight optimization"
+      ],
+      "learningFocus": "neural_training",
+      "patternsGenerated": 1
+    },
+    {
+      "type": "insight_generator",
+      "name": "InsightGenerator",
+      "role": "Generates insights from learning data",
+      "expertise": [
+        "data analysis",
+        "insight extraction",
+        "knowledge synthesis"
+      ],
+      "learningFocus": "insight_generation",
+      "patternsGenerated": 1
+    },
+    {
+      "type": "learning_coordinator",
+      "name": "LearningCoordinator",
+      "role": "Coordinates the learning process across agents",
+      "expertise": [
+        "coordination",
+        "learning orchestration",
+        "knowledge management"
+      ],
+      "learningFocus": "learning_coordination",
+      "patternsGenerated": 1
+    }
+  ],
+  "learningData": {
+    "patterns": [
+      {
+        "agent": "PatternDetector",
+        "type": "behavioral_patterns",
+        "patterns": [
+          "Sequential task execution pattern",
+          "Parallel processing optimization",
+          "Error recovery behavioral pattern",
+          "Resource allocation pattern"
+        ],
+        "timestamp": 1754258061637,
+        "confidence": 0.6991676184631097
+      },
+      {
+        "agent": "PerformanceAnalyzer",
+        "type": "performance_optimization",
+        "patterns": [
+          "Response time optimization pattern",
+          "Memory usage efficiency pattern",
+          "CPU utilization pattern",
+          "Throughput maximization pattern"
+        ],
+        "timestamp": 1754258063640,
+        "confidence": 0.38585887923451
+      },
+      {
+        "agent": "AdaptationSpecialist",
+        "type": "strategy_adaptation",
+        "patterns": [
+          "Dynamic strategy switching",
+          "Context-aware adaptation",
+          "Progressive improvement pattern",
+          "Feedback loop optimization"
+        ],
+        "timestamp": 1754258065698,
+        "confidence": 0.5490846371079509
+      },
+      {
+        "agent": "NeuralTrainer",
+        "type": "neural_training",
+        "patterns": [
+          "Gradient descent optimization",
+          "Pattern weight adjustment",
+          "Neural pathway strengthening",
+          "Synaptic pruning pattern"
+        ],
+        "timestamp": 1754258067460,
+        "confidence": 0.649772566197578
+      },
+      {
+        "agent": "InsightGenerator",
+        "type": "insight_generation",
+        "patterns": [
+          "Data correlation discovery",
+          "Emergent behavior identification",
+          "Predictive insight generation",
+          "Knowledge synthesis pattern"
+        ],
+        "timestamp": 1754258069288,
+        "confidence": 0.5014320579183867
+      },
+      {
+        "agent": "LearningCoordinator",
+        "type": "learning_coordination",
+        "patterns": [
+          "Cross-agent knowledge sharing",
+          "Learning synchronization pattern",
+          "Priority-based learning",
+          "Collective intelligence pattern"
+        ],
+        "timestamp": 1754258071093,
+        "confidence": 0.3888241080876731
+      }
+    ],
+    "performance": [
+      {
+        "scenario": "Pattern Recognition Training",
+        "complexity": "medium",
+        "duration": 801,
+        "improvement": 18.804038322699743,
+        "timestamp": 1754258073446
+      },
+      {
+        "scenario": "Performance Optimization Learning",
+        "complexity": "high",
+        "duration": 1203,
+        "improvement": 25.307259936228157,
+        "timestamp": 1754258076262
+      },
+      {
+        "scenario": "Adaptive Strategy Development",
+        "complexity": "high",
+        "duration": 1001,
+        "improvement": 37.942353175667584,
+        "timestamp": 1754258078751
+      },
+      {
+        "scenario": "Cross-Agent Knowledge Transfer",
+        "complexity": "medium",
+        "duration": 600,
+        "improvement": 21.19367974874679,
+        "timestamp": 1754258080928
+      },
+      {
+        "scenario": "Insight Generation and Synthesis",
+        "complexity": "low",
+        "duration": 402,
+        "improvement": 9.884396093775926,
+        "timestamp": 1754258082840
+      }
+    ],
+    "adaptations": [],
+    "insights": [
+      "Ring topology enables continuous knowledge flow between agents",
+      "Pattern confidence increases exponentially with training iterations",
+      "Complex scenarios yield higher performance improvements",
+      "Cross-agent knowledge transfer amplifies individual learning gains",
+      "Adaptive strategies outperform static approaches by 40-60%",
+      "Neural pattern pruning improves efficiency without sacrificing accuracy",
+      "Collective intelligence emerges from individual agent specialization",
+      "Learning coordination reduces redundant pattern development"
+    ]
+  },
+  "neuralPatterns": {
+    "totalPatterns": 6,
+    "patternsByType": {
+      "behavioral_patterns": 1,
+      "performance_optimization": 1,
+      "strategy_adaptation": 1,
+      "neural_training": 1,
+      "insight_generation": 1,
+      "learning_coordination": 1
+    },
+    "averageConfidence": 0.5290233111682013,
+    "evolutionRate": 3.5
+  },
+  "adaptations": {
+    "strategiesAdapted": 12,
+    "adaptationSuccess": 93.92700399220547,
+    "crossAgentTransfers": 13,
+    "emergentBehaviors": 3
+  }
+}

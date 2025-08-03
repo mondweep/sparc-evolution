@@ -1,0 +1,15 @@
+{
+  "name": "03-memory-chatbot",
+  "version": "1.0.0",
+  "description": "Memory-based chat bot using ruv-swarm persistent memory features",
+  "main": "memory-chatbot.js",
+  "scripts": {
+    "start": "node memory-chatbot.js",
+    "demo": "echo 'Starting memory-based chat bot demo...' && node memory-chatbot.js",
+    "clear-memory": "rm -f user-memory.json && echo 'Memory cleared'",
+    "show-memory": "cat user-memory.json 2>/dev/null || echo 'No memory file found'"
+  },
+  "keywords": ["ruv-swarm", "chatbot", "memory", "conversation", "ai"],
+  "author": "ruv-swarm learner",
+  "license": "MIT"
+}
