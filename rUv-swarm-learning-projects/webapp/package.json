@@ -1,0 +1,42 @@
+{
+  "name": "ruv-swarm-learning-webapp",
+  "version": "1.0.0",
+  "description": "Interactive webapp for learning rUv-swarm through 7 progressive projects",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite --host 0.0.0.0 --port 3003"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "monaco-editor": "^0.44.0",
+    "@monaco-editor/react": "^4.6.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
+    "lucide-react": "^0.263.1",
+    "framer-motion": "^10.16.4",
+    "tailwindcss": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  },
+  "keywords": [
+    "ruv-swarm",
+    "multi-agent",
+    "learning",
+    "interactive",
+    "education",
+    "ai-coordination"
+  ],
+  "author": "rUv-swarm Learning Team",
+  "license": "MIT"
+}

@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --swarm-primary: #6366f1;
+  --swarm-secondary: #8b5cf6;
+  --swarm-accent: #06b6d4;
+  --swarm-success: #10b981;
+  --swarm-warning: #f59e0b;
+  --swarm-error: #ef4444;
+  --neural-blue: #3b82f6;
+  --neural-purple: #8b5cf6;
+  --neural-green: #10b981;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Terminal-like styling */
+.terminal {
+  background: #1e293b;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.terminal pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Neural network visualization styles */
+.neural-node {
+  transition: all 0.3s ease;
+}
+
+.neural-node:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.neural-connection {
+  stroke-dasharray: 5,5;
+  animation: neural-pulse 2s infinite;
+}
+
+@keyframes neural-pulse {
+  0%, 100% { stroke-opacity: 0.3; }
+  50% { stroke-opacity: 1; }
+}
+
+/* Swarm status indicators */
+.swarm-active {
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { box-shadow: 0 0 5px var(--swarm-success); }
+  to { box-shadow: 0 0 20px var(--swarm-success), 0 0 30px var(--swarm-success); }
+}
+
+/* Agent communication visualization */
+.agent-communication {
+  position: relative;
+  overflow: hidden;
+}
+
+.agent-communication::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+  animation: communication-flow 2s infinite;
+}
+
+@keyframes communication-flow {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Learning progress animations */
+.learning-progress {
+  background: linear-gradient(90deg, var(--swarm-primary), var(--swarm-secondary));
+  background-size: 200% 100%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Interactive elements */
+.interactive-element {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.interactive-element:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.interactive-element:active {
+  transform: translateY(0);
+}
+
+/* Code editor enhancements */
+.monaco-editor {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-badge.completed {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}

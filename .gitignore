@@ -175,3 +175,5 @@ site/
 .sass-cache/
 .connect.lock
 .lock-wscript
+# Local Netlify folder
+.netlify

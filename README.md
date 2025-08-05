@@ -23,6 +23,11 @@
 **Source:** `./rUv-swarm-course/gemini-website-improvement/`  
 **Description:** Comprehensive tutorial and interactive guide for rUv-swarm framework with live demonstrations, code examples, and swarm behavior visualizations.
 
+### **🎮 rUv-Swarm Interactive Learning Projects**
+**🔗 Live App:** https://ruv-swarm-learning.netlify.app/  
+**Source:** `./rUv-swarm-learning-projects/webapp/`  
+**Description:** Interactive hands-on learning webapp featuring 7 progressive projects with simulated terminal, code editor, and real-time progress tracking. Perfect for practical learning of multi-agent coordination through guided exercises.
+
 ## 📊 Repository Overview
 
 This repository contains a comprehensive ecosystem of AI agent coordination tools, learning platforms, and educational content. The codebase includes multiple independent applications:
@@ -147,9 +152,11 @@ cd claude-flow-v2-architecture
 
 ### **🐝 1. rUv-Swarm Learning Projects**
 **Location:** `./rUv-swarm-learning-projects/`
+**🌐 Interactive Webapp:** https://ruv-swarm-learning.netlify.app/
 
 **What it contains:**
 - 7 progressive learning projects (Hello Swarm → Neural Learning)
+- **Interactive web interface** with simulated terminal and code editor
 - Hands-on JavaScript examples with ruv-swarm
 - Database persistence examples
 - Real neural learning demonstrations
@@ -170,6 +177,7 @@ cd claude-flow-v2-architecture
 **🌐 Online Versions Available:**
 - **Claude Flow Course:** https://claude-flow-course-app.netlify.app/ (`claude-md-course/` content)
 - **rUv-Swarm Tutorial:** https://ruv-swarm-tutorial.netlify.app/ (`gemini-website-improvement/` content)
+- **Interactive Learning Projects:** https://ruv-swarm-learning.netlify.app/ (`webapp/` hands-on learning)
 
 **What it contains:**
 - Full-stack Python/React educational platform
@@ -276,8 +284,9 @@ rUv-swarm-learn/
 **🌐 Immediate Access:**
 - **Claude Flow Course:** https://claude-flow-course-app.netlify.app/
 - **rUv-Swarm Tutorial:** https://ruv-swarm-tutorial.netlify.app/
+- **Interactive Learning Projects:** https://ruv-swarm-learning.netlify.app/
 
-Start learning immediately with interactive content, visualizations, and exercises.
+Start learning immediately with interactive content, visualizations, and hands-on exercises.
 
 #### **Option 2: Start with rUv-Swarm Learning (Local Development)**
 ```bash
@@ -328,7 +337,7 @@ node interactive-server.js
 5. **Follow** application-specific setup instructions
 
 ### **💡 First-Time User Recommendations**
-1. **Quick Start:** Try [Claude Flow Course](https://claude-flow-course-app.netlify.app/) or [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/) online
+1. **Quick Start:** Try [Claude Flow Course](https://claude-flow-course-app.netlify.app/), [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/), or [Interactive Learning Projects](https://ruv-swarm-learning.netlify.app/) online
 2. **Beginners:** After exploring online, set up `rUv-swarm-learning-projects/projects/01-hello-swarm/`
 3. **Developers:** Explore `rUv-swarm-course/` for full-stack experience
 4. **Researchers:** Review `claude-flow-v2-architecture/` for advanced concepts
@@ -499,18 +508,20 @@ Multiple applications include MCP server integration for Claude Code:
 ## 🎯 Learning Paths & Recommendations
 
 ### **🎓 For Beginners:**
-1. **Start Online:** Explore [Claude Flow Course](https://claude-flow-course-app.netlify.app/) or [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/)
-2. **Hands-On Practice:** Set up [Project 1: Hello Swarm](rUv-swarm-learning-projects/projects/01-hello-swarm/) locally
-3. **Progressive Learning:** Continue through all 7 learning projects sequentially
-4. **Deep Dive:** Explore neural learning demonstration in Project 6
-5. **Evidence Review:** Check database analysis to see actual learning evidence
+1. **Theory Foundation:** Start with [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/) for concepts and theory
+2. **Interactive Practice:** Try [Interactive Learning Projects](https://ruv-swarm-learning.netlify.app/) for hands-on exercises
+3. **Local Development:** Set up [Project 1: Hello Swarm](rUv-swarm-learning-projects/projects/01-hello-swarm/) locally for full development experience
+4. **Progressive Learning:** Continue through all 7 learning projects sequentially
+5. **Advanced Topics:** Explore neural learning demonstration in Project 6
+6. **Evidence Review:** Check database analysis to see actual learning evidence
 
 ### **🎓 For Developers:**
 1. **Quick Overview:** Browse [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/) for framework concepts
-2. **Full-Stack Experience:** Set up the [Course Platform](rUv-swarm-course/) locally
-3. **Technical Deep Dive:** Explore code execution and sandboxing features
-4. **Architecture Study:** Review the React frontend and Python backend integration
-5. **Custom Development:** Implement your own learning modules and extensions
+2. **Hands-On Testing:** Try [Interactive Learning Projects](https://ruv-swarm-learning.netlify.app/) to experience the development workflow
+3. **Full-Stack Experience:** Set up the [Course Platform](rUv-swarm-course/) locally
+4. **Technical Deep Dive:** Explore code execution and sandboxing features
+5. **Architecture Study:** Review the React frontend and Python backend integration
+6. **Custom Development:** Implement your own learning modules and extensions
 
 ### **🎓 For Researchers:**
 1. **Conceptual Foundation:** Review [Claude Flow Course](https://claude-flow-course-app.netlify.app/) for methodology
@@ -520,7 +531,10 @@ Multiple applications include MCP server integration for Claude Code:
 5. **Pattern Exploration:** Explore memory persistence and agent coordination patterns
 
 ### **🎓 For Educators:**
-1. **Live Demonstrations:** Use online applications ([Claude Flow Course](https://claude-flow-course-app.netlify.app/) / [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/)) for teaching
+1. **Live Demonstrations:** Use online applications for teaching:
+   - **Theory:** [rUv-Swarm Tutorial](https://ruv-swarm-tutorial.netlify.app/) for concepts and framework overview
+   - **Practice:** [Interactive Learning Projects](https://ruv-swarm-learning.netlify.app/) for hands-on student exercises
+   - **Methodology:** [Claude Flow Course](https://claude-flow-course-app.netlify.app/) for advanced coordination patterns
 2. **Custom Content:** Deploy [SPARC Evolution Platform](platform/) for methodology teaching
 3. **Educational Resources:** Leverage materials in [education/](education/) directory
 4. **Assessment Tools:** Create custom assessments using the certification system
