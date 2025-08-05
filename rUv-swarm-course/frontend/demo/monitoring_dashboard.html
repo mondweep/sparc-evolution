@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rUv-Swarm Course - System Monitoring Dashboard</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        .dashboard-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff88, #00aaff);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            opacity: 0.8;
+        }
+
+        .metric-label {
+            color: #aaa;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-change {
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .metric-change.positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .metric-change.negative {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-good { background: #00ff88; }
+        .status-warning { background: #ffaa00; }
+        .status-critical { background: #ff4444; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .charts-section {
+            margin: 30px 0;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #00ff88;
+            text-align: center;
+        }
+
+        .alerts-section {
+            margin: 30px 0;
+        }
+
+        .alert {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert.warning {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: #ffaa00;
+        }
+
+        .alert.info {
+            background: rgba(0, 170, 255, 0.1);
+            border-color: #00aaff;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .performance-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .summary-label {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .real-time-feed {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+
+        .feed-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feed-time {
+            color: #666;
+            font-size: 0.8em;
+            margin-right: 10px;
+            min-width: 60px;
+        }
+
+        .feed-message {
+            flex: 1;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #00ff88;
+            color: black;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00ff88;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐝 rUv-Swarm Course Monitoring</h1>
+        <p>Real-time System Performance & Health Dashboard</p>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">💻</span>
+                    <div>
+                        <div class="metric-label">System Status</div>
+                        <div class="metric-value" id="system-status">
+                            <span class="status-indicator status-good"></span>Online
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">🔥</span>
+                    <div>
+                        <div class="metric-label">CPU Usage</div>
+                        <div class="metric-value" id="cpu-usage">0%</div>
+                        <div class="metric-change positive" id="cpu-change">+0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">💾</span>
+                    <div>
+                        <div class="metric-label">Memory Usage</div>
+                        <div class="metric-value" id="memory-usage">0%</div>
+                        <div class="metric-change positive" id="memory-change">+0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">👥</span>
+                    <div>
+                        <div class="metric-label">Active Users</div>
+                        <div class="metric-value" id="active-users">0</div>
+                        <div class="metric-change" id="users-change">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">⚡</span>
+                    <div>
+                        <div class="metric-label">Code Executions</div>
+                        <div class="metric-value" id="code-executions">0</div>
+                        <div class="metric-change positive" id="executions-change">+0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-icon">✅</span>
+                    <div>
+                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-value" id="success-rate">0%</div>
+                        <div class="metric-change positive" id="success-change">+0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">Overview</button>
+            <button class="tab" onclick="showTab('performance')">Performance</button>
+            <button class="tab" onclick="showTab('users')">User Activity</button>
+            <button class="tab" onclick="showTab('security')">Security</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+            <div class="charts-section">
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">System Performance</div>
+                        <div id="system-chart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Code Execution Times</div>
+                        <div id="execution-chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="performance-summary">
+                <h3>📊 Performance Summary (Last 24h)</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-value" id="total-requests">0</div>
+                        <div class="summary-label">Total Requests</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="avg-response-time">0ms</div>
+                        <div class="summary-label">Avg Response Time</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="uptime">0h</div>
+                        <div class="summary-label">System Uptime</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="course-completions">0</div>
+                        <div class="summary-label">Course Completions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Tab -->
+        <div id="performance-tab" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Database Performance</div>
+                    <div id="db-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Network Traffic</div>
+                    <div id="network-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Response Time Distribution</div>
+                    <div id="response-dist-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Error Rate Trends</div>
+                    <div id="error-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Activity Tab -->
+        <div id="users-tab" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title">User Engagement</div>
+                    <div id="user-engagement-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Course Progress</div>
+                    <div id="course-progress-chart"></div>
+                </div>
+            </div>
+            
+            <div class="real-time-feed">
+                <h4>🔄 Real-time User Activity</h4>
+                <div id="user-activity-feed">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Waiting for user activity...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security-tab" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Security Events</div>
+                    <div id="security-events-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Failed Login Attempts</div>
+                    <div id="failed-logins-chart"></div>
+                </div>
+            </div>
+            
+            <div class="real-time-feed">
+                <h4>🛡️ Security Event Log</h4>
+                <div id="security-feed">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Monitoring security events...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="alerts-section">
+            <h3>🚨 System Alerts</h3>
+            <div id="alerts-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Monitoring for alerts...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let socket;
+        let charts = {};
+        let previousValues = {};
+        let activityFeed = [];
+        let securityFeed = [];
+
+        // Initialize dashboard
+        function initDashboard() {
+            // Connect to monitoring system
+            socket = io('http://localhost:5000');
+            
+            // Initialize charts
+            initCharts();
+            
+            // Setup socket event handlers
+            setupSocketHandlers();
+            
+            console.log('Dashboard initialized');
+        }
+
+        // Initialize all charts
+        function initCharts() {
+            // System performance chart
+            const systemLayout = {
+                title: { text: '', font: { color: 'white' } },
+                xaxis: { title: 'Time', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' },
+                yaxis: { title: 'Percentage', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: { color: 'white' },
+                showlegend: true,
+                legend: { font: { color: 'white' } }
+            };
+
+            charts.systemChart = {
+                data: [
+                    { x: [], y: [], name: 'CPU %', type: 'scatter', line: { color: '#ff4444' } },
+                    { x: [], y: [], name: 'Memory %', type: 'scatter', line: { color: '#00aaff' } }
+                ],
+                layout: systemLayout
+            };
+            Plotly.newPlot('system-chart', charts.systemChart.data, charts.systemChart.layout, {responsive: true});
+
+            // Code execution chart
+            charts.executionChart = {
+                data: [{ x: [], y: [], name: 'Execution Time (ms)', type: 'scatter', line: { color: '#00ff88' } }],
+                layout: {...systemLayout, yaxis: { title: 'Milliseconds', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' }}
+            };
+            Plotly.newPlot('execution-chart', charts.executionChart.data, charts.executionChart.layout, {responsive: true});
+
+            // Database performance chart
+            charts.dbChart = {
+                data: [
+                    { x: [], y: [], name: 'Query Time (ms)', type: 'scatter', line: { color: '#ffaa00' } },
+                    { x: [], y: [], name: 'Active Connections', type: 'scatter', line: { color: '#aa00ff' }, yaxis: 'y2' }
+                ],
+                layout: {
+                    ...systemLayout,
+                    yaxis2: { title: 'Connections', overlaying: 'y', side: 'right', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' }
+                }
+            };
+            Plotly.newPlot('db-chart', charts.dbChart.data, charts.dbChart.layout, {responsive: true});
+
+            // Network traffic chart
+            charts.networkChart = {
+                data: [
+                    { x: [], y: [], name: 'Sent (MB/s)', type: 'scatter', line: { color: '#00ff88' } },
+                    { x: [], y: [], name: 'Received (MB/s)', type: 'scatter', line: { color: '#0088ff' } }
+                ],
+                layout: {...systemLayout, yaxis: { title: 'MB/s', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' }}
+            };
+            Plotly.newPlot('network-chart', charts.networkChart.data, charts.networkChart.layout, {responsive: true});
+
+            // User engagement chart (pie chart)
+            charts.userEngagementChart = {
+                data: [{
+                    values: [40, 30, 20, 10],
+                    labels: ['Active Learning', 'Code Practice', 'Quiz Taking', 'Browsing'],
+                    type: 'pie',
+                    marker: { colors: ['#00ff88', '#00aaff', '#ffaa00', '#ff4444'] }
+                }],
+                layout: {
+                    ...systemLayout,
+                    showlegend: true
+                }
+            };
+            Plotly.newPlot('user-engagement-chart', charts.userEngagementChart.data, charts.userEngagementChart.layout, {responsive: true});
+
+            // Course progress chart (bar chart)
+            charts.courseProgressChart = {
+                data: [{
+                    x: ['Python Basics', 'JavaScript Fundamentals', 'React Concepts', 'API Development', 'Database Design'],
+                    y: [85, 72, 68, 45, 38],
+                    type: 'bar',
+                    marker: { color: '#00ff88' }
+                }],
+                layout: {
+                    ...systemLayout,
+                    yaxis: { title: 'Completion %', color: 'white', gridcolor: 'rgba(255,255,255,0.1)' }
+                }
+            };
+            Plotly.newPlot('course-progress-chart', charts.courseProgressChart.data, charts.courseProgressChart.layout, {responsive: true});
+        }
+
+        // Setup socket event handlers
+        function setupSocketHandlers() {
+            socket.on('connect', () => {
+                console.log('Connected to monitoring system');
+                updateSystemStatus('online');
+                socket.emit('get_status');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from monitoring system');
+                updateSystemStatus('offline');
+            });
+
+            socket.on('system_metrics', (data) => {
+                updateSystemMetrics(data);
+            });
+
+            socket.on('code_execution', (data) => {
+                updateExecutionMetrics(data);
+            });
+
+            socket.on('user_activity', (data) => {
+                updateUserActivity(data);
+            });
+
+            socket.on('security_event', (data) => {
+                updateSecurityEvents(data);
+            });
+
+            socket.on('alert', (alert) => {
+                showAlert(alert);
+            });
+
+            socket.on('status', (data) => {
+                updateOverallStatus(data);
+            });
+
+            socket.on('db_metrics', (data) => {
+                updateDatabaseMetrics(data);
+            });
+        }
+
+        // Update system metrics
+        function updateSystemMetrics(data) {
+            // Update metric cards
+            updateMetricValue('cpu-usage', data.cpu_percent, '%', 1);
+            updateMetricValue('memory-usage', data.memory_percent, '%', 1);
+
+            // Update charts
+            const now = new Date();
+            
+            // System chart
+            charts.systemChart.data[0].x.push(now);
+            charts.systemChart.data[0].y.push(data.cpu_percent);
+            charts.systemChart.data[1].x.push(now);
+            charts.systemChart.data[1].y.push(data.memory_percent);
+
+            // Keep only last 50 points
+            if (charts.systemChart.data[0].x.length > 50) {
+                charts.systemChart.data[0].x.shift();
+                charts.systemChart.data[0].y.shift();
+                charts.systemChart.data[1].x.shift();
+                charts.systemChart.data[1].y.shift();
+            }
+
+            Plotly.redraw('system-chart');
+
+            // Update network chart
+            const networkSent = (data.network_sent / (1024 * 1024)).toFixed(2);
+            const networkRecv = (data.network_recv / (1024 * 1024)).toFixed(2);
+            
+            charts.networkChart.data[0].x.push(now);
+            charts.networkChart.data[0].y.push(networkSent);
+            charts.networkChart.data[1].x.push(now);
+            charts.networkChart.data[1].y.push(networkRecv);
+
+            if (charts.networkChart.data[0].x.length > 50) {
+                charts.networkChart.data[0].x.shift();
+                charts.networkChart.data[0].y.shift();
+                charts.networkChart.data[1].x.shift();
+                charts.networkChart.data[1].y.shift();
+            }
+
+            Plotly.redraw('network-chart');
+        }
+
+        // Update execution metrics
+        function updateExecutionMetrics(data) {
+            const now = new Date();
+            
+            charts.executionChart.data[0].x.push(now);
+            charts.executionChart.data[0].y.push(data.execution_time_ms);
+
+            if (charts.executionChart.data[0].x.length > 50) {
+                charts.executionChart.data[0].x.shift();
+                charts.executionChart.data[0].y.shift();
+            }
+
+            Plotly.redraw('execution-chart');
+
+            // Add to activity feed
+            addToActivityFeed(`Code executed: ${data.language} (${data.execution_time_ms.toFixed(1)}ms)`);
+        }
+
+        // Update database metrics
+        function updateDatabaseMetrics(data) {
+            const now = new Date();
+            
+            charts.dbChart.data[0].x.push(now);
+            charts.dbChart.data[0].y.push(data.avg_query_time);
+            charts.dbChart.data[1].x.push(now);
+            charts.dbChart.data[1].y.push(data.active_connections);
+
+            if (charts.dbChart.data[0].x.length > 50) {
+                charts.dbChart.data[0].x.shift();
+                charts.dbChart.data[0].y.shift();
+                charts.dbChart.data[1].x.shift();
+                charts.dbChart.data[1].y.shift();
+            }
+
+            Plotly.redraw('db-chart');
+        }
+
+        // Update user activity
+        function updateUserActivity(data) {
+            const message = `${data.user_id}: ${data.action} on ${data.page}`;
+            addToActivityFeed(message);
+        }
+
+        // Update security events
+        function updateSecurityEvents(data) {
+            const message = `${data.event_type} from ${data.ip_address} (${data.severity})`;
+            addToSecurityFeed(message);
+        }
+
+        // Update overall status
+        function updateOverallStatus(data) {
+            updateMetricValue('active-users', data.system.active_users, '', 0);
+            updateMetricValue('code-executions', data.performance.total_executions, '', 0);
+            updateMetricValue('success-rate', data.performance.success_rate_percent, '%', 1);
+
+            // Update summary
+            document.getElementById('total-requests').textContent = data.performance.total_executions;
+            document.getElementById('avg-response-time').textContent = data.performance.avg_execution_time_ms.toFixed(0) + 'ms';
+            document.getElementById('uptime').textContent = data.system.uptime_hours.toFixed(1) + 'h';
+            document.getElementById('course-completions').textContent = data.courses.total_completions;
+        }
+
+        // Helper functions
+        function updateMetricValue(elementId, newValue, suffix = '', decimals = 0) {
+            const element = document.getElementById(elementId);
+            const changeElement = document.getElementById(elementId.replace('-usage', '-change').replace('-users', '-change').replace('-executions', '-change').replace('-rate', '-change'));
+            
+            if (element) {
+                const oldValue = parseFloat(element.textContent) || 0;
+                const displayValue = newValue.toFixed(decimals) + suffix;
+                element.textContent = displayValue;
+
+                // Update change indicator
+                if (changeElement && previousValues[elementId] !== undefined) {
+                    const change = newValue - previousValues[elementId];
+                    const changeText = change >= 0 ? `+${change.toFixed(decimals)}${suffix}` : `${change.toFixed(decimals)}${suffix}`;
+                    changeElement.textContent = changeText;
+                    changeElement.className = `metric-change ${change >= 0 ? 'positive' : 'negative'}`;
+                }
+
+                previousValues[elementId] = newValue;
+            }
+        }
+
+        function updateSystemStatus(status) {
+            const statusElement = document.getElementById('system-status');
+            const indicator = statusElement.querySelector('.status-indicator');
+            
+            if (status === 'online') {
+                indicator.className = 'status-indicator status-good';
+                statusElement.innerHTML = '<span class="status-indicator status-good"></span>Online';
+            } else {
+                indicator.className = 'status-indicator status-critical';
+                statusElement.innerHTML = '<span class="status-indicator status-critical"></span>Offline';
+            }
+        }
+
+        function addToActivityFeed(message) {
+            const feed = document.getElementById('user-activity-feed');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            
+            const feedItem = document.createElement('div');
+            feedItem.className = 'feed-item';
+            feedItem.innerHTML = `
+                <span class="feed-time">${timeStr}</span>
+                <span class="feed-message">${message}</span>
+            `;
+            
+            // Remove loading message if present
+            const loading = feed.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            feed.insertBefore(feedItem, feed.firstChild);
+            
+            // Keep only last 20 items
+            const items = feed.querySelectorAll('.feed-item');
+            if (items.length > 20) {
+                items[items.length - 1].remove();
+            }
+        }
+
+        function addToSecurityFeed(message) {
+            const feed = document.getElementById('security-feed');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            
+            const feedItem = document.createElement('div');
+            feedItem.className = 'feed-item';
+            feedItem.innerHTML = `
+                <span class="feed-time">${timeStr}</span>
+                <span class="feed-message">${message}</span>
+            `;
+            
+            // Remove loading message if present
+            const loading = feed.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            feed.insertBefore(feedItem, feed.firstChild);
+            
+            // Keep only last 20 items
+            const items = feed.querySelectorAll('.feed-item');
+            if (items.length > 20) {
+                items[items.length - 1].remove();
+            }
+        }
+
+        function showAlert(alert) {
+            const alertsContainer = document.getElementById('alerts-container');
+            
+            // Remove loading message if present
+            const loading = alertsContainer.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alert.type}`;
+            
+            const timestamp = new Date(alert.timestamp * 1000).toLocaleString();
+            alertDiv.innerHTML = `
+                <strong>${alert.type.toUpperCase()} ALERT</strong> - ${timestamp}<br>
+                ${JSON.stringify(alert.data, null, 2)}
+            `;
+            
+            alertsContainer.insertBefore(alertDiv, alertsContainer.firstChild);
+            
+            // Remove alert after 30 seconds
+            setTimeout(() => {
+                if (alertDiv && alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 30000);
+            
+            // Keep only last 10 alerts
+            const alerts = alertsContainer.querySelectorAll('.alert');
+            if (alerts.length > 10) {
+                alerts[alerts.length - 1].remove();
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            
+            // Refresh charts when switching tabs
+            setTimeout(() => {
+                Object.keys(charts).forEach(chartKey => {
+                    const chartId = chartKey.replace('Chart', '-chart');
+                    if (document.getElementById(chartId) && document.getElementById(chartId).offsetParent !== null) {
+                        Plotly.Plots.resize(chartId);
+                    }
+                });
+            }, 100);
+        }
+
+        // Auto-refresh status every 30 seconds
+        setInterval(() => {
+            if (socket && socket.connected) {
+                socket.emit('get_status');
+            }
+        }, 30000);
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

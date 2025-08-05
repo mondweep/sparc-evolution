@@ -120,34 +120,6 @@ cd rUv-swarm-learning-projects
 # Follow setup instructions in rUv-swarm-learning-projects/README.md
 ```
 
-#### **📚 B. rUv-Swarm Course Platform** (Interactive Learning)
-**Path:** `./rUv-swarm-course/`  
-**Best for:** Full-stack course platform with interactive lessons and code execution
-```bash
-cd rUv-swarm-course/backend
-python -m pip install -r requirements.txt
-python start_server.py
-# See rUv-swarm-course/README.md for full setup
-```
-
-#### **🎓 C. SPARC Evolution Platform** (Methodology Learning)
-**Path:** `./platform/`  
-**Best for:** Learning SPARC methodology through interactive playground
-```bash
-cd platform
-npm install
-node interactive-server.js
-# Access at http://localhost:3002
-```
-
-#### **🏗️ D. Claude Flow v2 Architecture** (Advanced Orchestration)
-**Path:** `./claude-flow-v2-architecture/`  
-**Best for:** Understanding advanced multi-agent orchestration concepts
-```bash
-cd claude-flow-v2-architecture
-# Review documentation and architecture files
-```
-
 ## 📁 Complete Application Directory
 
 ### **🐝 1. rUv-Swarm Learning Projects**

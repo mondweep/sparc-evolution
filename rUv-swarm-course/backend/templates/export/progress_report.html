@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Progress Report - {student_name}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #2d3748;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header h2 {
+            margin: 10px 0 0 0;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        
+        .header .date {
+            margin-top: 15px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            border-left: 4px solid #4299e1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2b6cb0;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h3 {
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .course-table th,
+        .course-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .course-table th {
+            background-color: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.3s ease;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background-color: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-in-progress {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+        
+        .status-enrolled {
+            background-color: #bee3f8;
+            color: #2a69ac;
+        }
+        
+        .achievement-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .achievement-card h4 {
+            margin: 0 0 5px 0;
+        }
+        
+        .achievement-card .date {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .recommendations {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .recommendations ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .recommendations li {
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #f7fafc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #718096;
+            font-size: 0.9em;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Learning Progress Report</h1>
+            <h2>{student_name}</h2>
+            <div class="date">Generated on {report_date}</div>
+        </div>
+        
+        <div class="content">
+            <!-- Summary Statistics -->
+            <div class="section">
+                <h3>📊 Summary Statistics</h3>
+                <div class="summary-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">{courses_completed}</span>
+                        <div class="stat-label">Courses Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{lessons_completed}</span>
+                        <div class="stat-label">Lessons Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{quizzes_passed}</span>
+                        <div class="stat-label">Quizzes Passed</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{total_study_time_hours}h</span>
+                        <div class="stat-label">Total Study Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{average_quiz_score}%</span>
+                        <div class="stat-label">Average Quiz Score</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Progress -->
+            <div class="section">
+                <h3>📚 Course Progress</h3>
+                <table class="course-table">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Level</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                            <th>Enrolled</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {course_rows}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Achievements -->
+            <div class="section">
+                <h3>🏆 Achievements</h3>
+                <div class="achievement-list">
+                    {achievement_cards}
+                </div>
+            </div>
+            
+            <!-- Learning Recommendations -->
+            <div class="section">
+                <h3>💡 Learning Recommendations</h3>
+                <div class="recommendations">
+                    <ul>
+                        {recommendation_items}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="section">
+                <h3>⚡ Recent Activity</h3>
+                <ul>
+                    {recent_activity_items}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This report was generated by the rUv-Swarm Learning Platform</p>
+            <p>For questions or support, please contact your instructor or platform administrator</p>
+        </div>
+    </div>
+</body>
+</html>

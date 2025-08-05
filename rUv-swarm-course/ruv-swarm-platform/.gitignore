@@ -1,0 +1,105 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / Build
+build/
+dist/
+*.egg-info/
+.eggs/
+*.manifest
+*.spec
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/backups/*.sql
+
+# Cache
+.cache/
+.parcel-cache/
+.npm
+.eslintcache
+.stylelintcache
+
+# Testing
+coverage/
+.coverage
+.pytest_cache/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Docker
+docker-compose.override.yml
+
+# FastAPI specific
+*.pyc
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# React/Vite specific
+dist-ssr/
+*.local
+
+# WebAssembly
+*.wasm
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Production
+.vercel
+.netlify

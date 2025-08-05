@@ -1,0 +1,166 @@
+{
+  "export_metadata": {
+    "exported_at": "2024-12-19",
+    "source": "rUv-Swarm Interactive Learning Platform",
+    "version": "1.0",
+    "format": "JSON"
+  },
+  "frontend_courses": [
+    {
+      "id": 1,
+      "title": "Introduction to rUv-Swarm",
+      "description": "Learn the fundamentals of rUv-Swarm technology and distributed AI systems",
+      "difficulty": "beginner",
+      "duration": "4 weeks",
+      "lessonCount": 8,
+      "studentCount": 1247,
+      "rating": 4.8,
+      "instructor": "Dr. Sarah Chen"
+    },
+    {
+      "id": 2,
+      "title": "Advanced Swarm Patterns",
+      "description": "Master complex coordination patterns and fault-tolerant swarm architectures",
+      "difficulty": "advanced",
+      "duration": "6 weeks",
+      "lessonCount": 12,
+      "studentCount": 623,
+      "rating": 4.9,
+      "instructor": "Prof. Michael Rodriguez"
+    },
+    {
+      "id": 3,
+      "title": "AI-Powered Development",
+      "description": "Build intelligent applications using AI agents and swarm coordination",
+      "difficulty": "intermediate",
+      "duration": "5 weeks",
+      "lessonCount": 10,
+      "studentCount": 891,
+      "rating": 4.7,
+      "instructor": "Emma Thompson"
+    }
+  ],
+  "backend_courses": [
+    {
+      "title": "rUv-swarm Foundations",
+      "slug": "ruv-swarm-foundations",
+      "level": "foundations",
+      "duration_hours": 8,
+      "difficulty": 1,
+      "description": "Master the fundamentals of swarm intelligence and neural networks. This comprehensive course covers everything from basic concepts to hands-on implementation using the rUv-swarm framework.",
+      "prerequisites": "Basic programming knowledge recommended. No prior AI/ML experience required.",
+      "learning_objectives": "By the end of this course, you will:\n• Understand neural network fundamentals and architecture\n• Master Particle Swarm Optimization (PSO) concepts\n• Build and train your first neural network using rUv-swarm\n• Optimize network parameters for real-world datasets\n• Implement basic swarm intelligence algorithms",
+      "thumbnail_url": "/static/images/foundations-thumb.png",
+      "is_published": true,
+      "modules": [
+        {
+          "title": "Introduction to Neural Networks",
+          "slug": "intro-neural-networks",
+          "description": "Understand the building blocks of artificial intelligence",
+          "order_index": 1,
+          "duration_minutes": 90,
+          "lessons": [
+            {
+              "title": "What is a Neural Network?",
+              "slug": "what-is-neural-network",
+              "description": "Basic concepts and biological inspiration",
+              "duration_minutes": 30,
+              "order_index": 1,
+              "content_type": "lesson",
+              "content_preview": "Neural networks are computational models inspired by the human brain. Learn about neurons, connections, weights, and activation functions."
+            },
+            {
+              "title": "Network Architecture Types",
+              "slug": "network-architecture-types",
+              "description": "Feedforward, recurrent, and convolutional networks",
+              "duration_minutes": 30,
+              "order_index": 2,
+              "content_type": "lesson"
+            },
+            {
+              "title": "Training Neural Networks",
+              "slug": "training-neural-networks",
+              "description": "Backpropagation and gradient descent fundamentals",
+              "duration_minutes": 30,
+              "order_index": 3,
+              "content_type": "lesson"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "rUv-swarm Practitioner",
+      "slug": "ruv-swarm-practitioner",
+      "level": "practitioner",
+      "duration_hours": 16,
+      "difficulty": 3,
+      "description": "Deep dive into the rUv-swarm codebase and learn to modify and extend the system. Master the FANN library, understand PSO implementation, and build your own neural network solutions.",
+      "prerequisites": "Completion of rUv-swarm Foundations. Strong C programming skills required.",
+      "learning_objectives": "By the end of this course, you will:\n• Master the FANN (Fast Artificial Neural Network) library\n• Analyze and modify the rUv-swarm source code\n• Understand PSO implementation details and parameters\n• Tune hyperparameters for optimal performance\n• Adapt the system for new datasets and problems",
+      "thumbnail_url": "/static/images/practitioner-thumb.png",
+      "is_published": true
+    },
+    {
+      "title": "rUv-swarm Architect",
+      "slug": "ruv-swarm-architect",
+      "level": "architect",
+      "duration_hours": 24,
+      "difficulty": 5,
+      "description": "Design and implement advanced swarm intelligence systems. Learn to extend rUv-swarm with new optimization algorithms, deploy containerized solutions, and architect distributed cognitive systems.",
+      "prerequisites": "Completion of rUv-swarm Practitioner. Advanced programming and system design experience.",
+      "learning_objectives": "By the end of this course, you will:\n• Implement alternative optimization algorithms (GA, ACO)\n• Design modular, extensible AI architectures\n• Containerize and deploy rUv-swarm applications\n• Architect solutions for complex, real-world problems\n• Create comprehensive AI system documentation",
+      "thumbnail_url": "/static/images/architect-thumb.png",
+      "is_published": true
+    }
+  ],
+  "sample_lessons": [
+    {
+      "id": 1,
+      "title": "What is rUv-Swarm?",
+      "duration": "15 min",
+      "type": "Video",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Setting up Your Environment",
+      "duration": "20 min",
+      "type": "Interactive",
+      "completed": false
+    },
+    {
+      "id": 3,
+      "title": "Your First Swarm",
+      "duration": "25 min",
+      "type": "Coding",
+      "completed": false
+    },
+    {
+      "id": 4,
+      "title": "Understanding Swarm Intelligence",
+      "duration": "18 min",
+      "type": "Video",
+      "completed": false
+    },
+    {
+      "id": 5,
+      "title": "Coordination Patterns",
+      "duration": "22 min",
+      "type": "Interactive",
+      "completed": false
+    }
+  ],
+  "file_locations": {
+    "frontend_data": "frontend/src/store/useAppStore.js",
+    "backend_initialization": "backend/scripts/init_sample_data.py",
+    "export_service": "backend/services/export_service.py",
+    "api_endpoints": "backend/api/export.py"
+  },
+  "download_instructions": {
+    "method_1": "Copy frontend/src/store/useAppStore.js for basic course structure",
+    "method_2": "Copy backend/scripts/init_sample_data.py for comprehensive course content",
+    "method_3": "Use export API endpoints: POST /api/export/lesson/{id}/markdown, /api/export/progress/{user_id}/json",
+    "method_4": "This JSON file contains all structured content for easy import"
+  }
+}

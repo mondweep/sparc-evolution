@@ -1,0 +1,47 @@
+# Test Dependencies for rUv-Swarm Course Platform QA Testing
+
+# Core testing framework
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Web testing with Selenium
+selenium==4.16.0
+webdriver-manager==4.0.1
+
+# HTTP client for API testing
+requests==2.31.0
+httpx==0.25.2
+
+# Data validation and parsing
+pydantic==2.5.0
+
+# Fake data generation for testing
+faker==20.1.0
+factory-boy==3.3.0
+
+# Image processing for screenshots
+Pillow==10.1.0
+
+# JSON/YAML handling
+PyYAML==6.0.1
+
+# Logging and reporting
+python-json-logger==2.0.7
+
+# Time handling
+python-dateutil==2.8.2
+
+# Process monitoring
+psutil==5.9.6
+
+# Database testing (if needed)
+sqlalchemy==2.0.23
+
+# Development dependencies
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+
+# Optional: Browser automation alternatives
+# playwright==1.40.0  # Alternative to Selenium

@@ -1,0 +1,88 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "title": "Introduction to rUv-Swarm",
+      "description": "Learn the fundamentals of rUv-Swarm technology and distributed AI systems",
+      "difficulty": "beginner",
+      "duration": "4 weeks",
+      "lessonCount": 8,
+      "studentCount": 1247,
+      "rating": 4.8,
+      "instructor": "Dr. Sarah Chen"
+    },
+    {
+      "id": 2,
+      "title": "Advanced Swarm Patterns",
+      "description": "Master complex coordination patterns and fault-tolerant swarm architectures",
+      "difficulty": "advanced",
+      "duration": "6 weeks",
+      "lessonCount": 12,
+      "studentCount": 623,
+      "rating": 4.9,
+      "instructor": "Prof. Michael Rodriguez"
+    },
+    {
+      "id": 3,
+      "title": "AI-Powered Development",
+      "description": "Build intelligent applications using AI agents and swarm coordination",
+      "difficulty": "intermediate",
+      "duration": "5 weeks",
+      "lessonCount": 10,
+      "studentCount": 891,
+      "rating": 4.7,
+      "instructor": "Emma Thompson"
+    }
+  ],
+  "lessons": [
+    {
+      "id": 1,
+      "title": "What is rUv-Swarm?",
+      "duration": "15 min",
+      "type": "Video",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Setting up Your Environment",
+      "duration": "20 min",
+      "type": "Interactive",
+      "completed": false
+    },
+    {
+      "id": 3,
+      "title": "Your First Swarm",
+      "duration": "25 min",
+      "type": "Coding",
+      "completed": false
+    },
+    {
+      "id": 4,
+      "title": "Understanding Swarm Intelligence",
+      "duration": "18 min",
+      "type": "Video",
+      "completed": false
+    },
+    {
+      "id": 5,
+      "title": "Coordination Patterns",
+      "duration": "22 min",
+      "type": "Interactive",
+      "completed": false
+    }
+  ],
+  "progress": {
+    "1": {
+      "completed": true,
+      "score": 95
+    },
+    "2": {
+      "completed": true,
+      "score": 88
+    },
+    "3": {
+      "completed": false,
+      "score": 0
+    }
+  }
+}
