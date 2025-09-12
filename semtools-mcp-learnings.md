@@ -310,6 +310,148 @@ npx @modelcontextprotocol/server-name --port 3000
 }
 ```
 
+### Why Exposing Port 3000 (or Any Port) is Risky
+
+#### 1. **Network Attack Surface**
+When you expose a port like 3000:
+```bash
+# RISKY - Creates network listener
+npx @modelcontextprotocol/server-name --port 3000
+```
+This opens port 3000 to network connections, meaning:
+- Any process on your machine can connect
+- If firewall is misconfigured, external attackers could connect
+- Creates a persistent network service that can be discovered
+- Enables port scanning and service enumeration
+
+#### 2. **Localhost Still Has Risks**
+Even binding to `127.0.0.1:3000` isn't completely safe:
+- Other local processes can connect (including malware)
+- Browser-based attacks via JavaScript `fetch()` or XHR
+- Port scanning by local malicious software
+- Shared systems allow other users to connect
+- No built-in authentication on most MCP servers
+
+#### 3. **Common Misconfiguration Dangers**
+```bash
+# VERY DANGEROUS - Binds to all interfaces
+npx server --port 3000 --host 0.0.0.0
+
+# Docker mistake - Exposes to internet!
+docker run -p 3000:3000 mcp-server  # Exposed externally!
+```
+
+#### 4. **Missing Security Controls**
+Network-exposed MCP servers typically lack:
+- Authentication mechanisms
+- Rate limiting
+- Request validation
+- Access controls
+- Encryption (HTTP vs HTTPS)
+
+#### 5. **Protocol Vulnerabilities**
+HTTP/TCP protocols over network can suffer from:
+- Man-in-the-middle attacks
+- Request injection
+- Buffer overflow exploits
+- Protocol confusion attacks
+- Session hijacking
+
+#### 6. **Real-World Attack Scenarios**
+
+**Scenario 1: Malware Exploitation**
+```bash
+# Malware discovers open port 3000
+curl http://127.0.0.1:3000/execute -d '{"command": "rm -rf /"}'
+```
+
+**Scenario 2: Browser-Based Attack**
+```javascript
+// Malicious website exploits local MCP server
+fetch('http://127.0.0.1:3000/api/files')
+  .then(data => sendToAttacker(data))
+```
+
+**Scenario 3: Docker Misconfiguration**
+```dockerfile
+# DANGEROUS - Exposes to internet
+EXPOSE 3000
+# Running with -p 3000:3000 makes it public!
+```
+
+#### Why Stdio Mode is Safer
+
+```bash
+# SAFE - Uses stdio pipes, no network
+npx @modelcontextprotocol/server-name
+```
+
+**Stdio advantages:**
+- **No network exposure** - only parent process can communicate
+- **Process isolation** - communication through pipes only  
+- **Automatic cleanup** - dies when parent process exits
+- **OS-level security** - leverages process permissions
+- **No port scanning** - invisible to network tools
+- **No remote access** - physically impossible to connect remotely
+
+#### Network Security Best Practices (If Ports Are Required)
+
+1. **Bind to Localhost Only**
+```bash
+npx server --port 3000 --host 127.0.0.1
+```
+
+2. **Use Unix Domain Sockets Instead**
+```bash
+# Better than TCP ports
+npx server --socket /tmp/mcp.sock
+chmod 600 /tmp/mcp.sock  # Restrict permissions
+```
+
+3. **Add Authentication Layer**
+```javascript
+{
+  "auth": {
+    "type": "bearer",
+    "token": "secure-random-token"
+  }
+}
+```
+
+4. **Implement Rate Limiting**
+```javascript
+{
+  "rate_limit": {
+    "requests_per_minute": 60,
+    "max_connections": 5
+  }
+}
+```
+
+5. **Use TLS/SSL for Encryption**
+```bash
+# Use HTTPS instead of HTTP
+npx server --port 3000 --cert server.crt --key server.key
+```
+
+#### Architecture Comparison
+
+**Network Mode (Risky):**
+```
+Claude Code → Network Stack → Port 3000 → MCP Server
+     ↑                            ↑
+  Attacker                   Port Scanner
+```
+
+**Stdio Mode (Safe):**
+```
+Claude Code ←→ Stdio Pipes ←→ MCP Server
+           (Process Isolation)
+```
+
+#### Key Principle
+**Avoid network protocols when local IPC (Inter-Process Communication) suffices.** Network exposure should only be used when absolutely necessary and with proper security controls.
+
 ## Key Takeaways
 
 ### Semtools
