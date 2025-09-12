@@ -174,4 +174,4 @@ site/
 # Miscellaneous
 .sass-cache/
 .connect.lock
-.lock-wscript
+.lock-wscript.parse_config.json
