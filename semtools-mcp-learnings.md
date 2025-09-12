@@ -1028,6 +1028,8 @@ STDIO mode creates strong process isolation enforced by the operating system:
 
 #### STDIO Mode Implementation (Secure)
 
+**Programming Language Note**: *The following example is written in **JavaScript** for the **Node.js** runtime environment. Node.js is a JavaScript runtime that allows JavaScript to run on servers and desktops (not just in web browsers). It provides APIs for system operations like spawning processes and file management.*
+
 ```javascript
 // How Claude Code securely spawns MCP server via STDIO
 const { spawn } = require('child_process');
@@ -1053,6 +1055,100 @@ mcpServer.stdout.on('data', (data) => {
 // NO NETWORK INVOLVEMENT AT ANY LEVEL
 // Other processes cannot access this communication channel
 ```
+
+**Code Explanation for Non-JavaScript Readers:**
+
+```javascript
+// Line-by-line breakdown:
+
+// 1. Import Node.js module for creating child processes
+const { spawn } = require('child_process');
+//     ↑ Destructuring assignment (extracts 'spawn' function)
+//                ↑ CommonJS module import (Node.js style)
+
+// 2. Create a new child process running the MCP server
+const mcpServer = spawn('npx', ['@modelcontextprotocol/server-memory'], {
+//    ↑ Variable to hold process reference
+//                     ↑ Command to run ('npx' - Node package executor)
+//                            ↑ Arguments passed to the command
+    stdio: ['pipe', 'pipe', 'pipe']  // Configure input/output streams
+//         ↑ stdin   ↑ stdout ↑ stderr (standard streams)
+});
+
+// 3. Send data TO the child process via its input stream
+mcpServer.stdin.write(JSON.stringify({
+//        ↑ stdin = standard input (pipe TO child)
+//                     ↑ Convert JavaScript object to JSON string
+    method: "get_status",  // JavaScript object with method name
+    id: 1                  // and request ID
+}) + '\n');               // Add newline character (message delimiter)
+
+// 4. Listen FOR data FROM the child process via its output stream
+mcpServer.stdout.on('data', (data) => {
+//        ↑ stdout = standard output (pipe FROM child)
+//                   ↑ Event listener pattern
+//                           ↑ Arrow function (ES6 syntax)
+    const response = JSON.parse(data.toString());
+//        ↑ Convert received bytes to string, then parse JSON
+    console.log('Secure response:', response);
+//  ↑ Print to console (like printf, print, echo in other languages)
+});
+```
+
+**Key JavaScript/Node.js Concepts:**
+
+1. **`require()`**: Node.js way to import modules (like `import` in Python or `#include` in C)
+2. **`const`**: Creates a constant variable (immutable reference)
+3. **`spawn()`**: Node.js function to create child processes
+4. **`stdio`**: Configuration for Standard Input/Output streams
+5. **`.write()`**: Method to send data through a pipe
+6. **`.on()`**: Event listener pattern (similar to callbacks)
+7. **Arrow functions `=>`**: Modern JavaScript function syntax
+8. **`JSON.stringify()`/`JSON.parse()`**: Convert between objects and JSON strings
+
+**Equivalent Concepts in Other Languages:**
+
+```python
+# Python equivalent (conceptual)
+import subprocess
+import json
+
+# Spawn child process with pipes
+process = subprocess.Popen(
+    ['npx', '@modelcontextprotocol/server-memory'],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE
+)
+
+# Send data to child
+request = json.dumps({"method": "get_status", "id": 1}) + "\n"
+process.stdin.write(request.encode())
+
+# Read response from child  
+response_data = process.stdout.readline()
+response = json.loads(response_data.decode())
+print("Secure response:", response)
+```
+
+```bash
+# Bash equivalent (conceptual)
+# Start MCP server in background with pipes
+npx @modelcontextprotocol/server-memory &
+SERVER_PID=$!
+
+# Send request via echo and pipe
+echo '{"method": "get_status", "id": 1}' | npx @modelcontextprotocol/server-memory
+
+# The pipes are automatically managed by the shell
+```
+
+**Why This Code is Secure:**
+- **No network ports**: Uses process pipes, not TCP/UDP sockets
+- **Process isolation**: Only parent can communicate with child
+- **Automatic cleanup**: Child dies when parent exits
+- **OS-level protection**: Kernel enforces access controls
+- **No external visibility**: Cannot be discovered by network tools
 
 #### Network Mode Implementation (Vulnerable)
 
