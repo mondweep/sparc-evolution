@@ -452,6 +452,223 @@ Claude Code ←→ Stdio Pipes ←→ MCP Server
 #### Key Principle
 **Avoid network protocols when local IPC (Inter-Process Communication) suffices.** Network exposure should only be used when absolutely necessary and with proper security controls.
 
+### Deep Dive: Why `docker run -p 3000:3000` Exposes to Internet
+
+This is a critical concept that catches many developers off-guard. Let's break down exactly why this seemingly innocent command creates internet exposure:
+
+#### How Docker's `-p` Flag Works
+
+The `-p` (or `--publish`) flag creates port mapping from host to container:
+```bash
+-p [host_port]:[container_port]
+-p 3000:3000
+    ↑      ↑
+    |      └── Port inside the container
+    └── Port on your host machine (YOUR COMPUTER)
+```
+
+#### The Critical Detail: Default Binding Behavior
+
+**By default, `-p 3000:3000` binds to `0.0.0.0:3000` on your host**, which means:
+
+```bash
+# What you type:
+docker run -p 3000:3000 mcp-server
+
+# What Docker actually does:
+docker run -p 0.0.0.0:3000:3000 mcp-server
+                ↑
+                └── ALL network interfaces!
+```
+
+#### What `0.0.0.0` Actually Means
+
+- `0.0.0.0` = "bind to all available network interfaces"
+- This includes:
+  - `127.0.0.1` (localhost/loopback)
+  - Your WiFi IP (e.g., `192.168.1.100`)
+  - Your Ethernet IP
+  - **Your public IP address if directly connected**
+
+#### Internet Exposure Scenarios
+
+**1. Cloud/VPS Servers**
+```bash
+# Running on AWS, Azure, DigitalOcean, etc.
+docker run -p 3000:3000 mcp-server
+# Now accessible at: http://your-server-public-ip:3000
+# Anyone on the internet can connect!
+```
+
+**2. Home Networks with Port Forwarding**
+```bash
+# Your router forwards port 3000, or has DMZ enabled
+# Your service becomes accessible from outside your network
+```
+
+**3. Corporate Networks**
+```bash
+# Many corporate networks have direct routing
+# Port 3000 becomes accessible to entire corporate network
+# Could violate security policies
+```
+
+#### Real Attack Scenario
+
+```bash
+# You innocently run:
+docker run -p 3000:3000 mcp-server
+
+# Attacker from anywhere can now:
+curl http://your-public-ip:3000/execute \
+  -d '{"command": "cat /etc/passwd"}'
+curl http://your-public-ip:3000/files \
+  -d '{"action": "list", "path": "/"}'
+```
+
+#### How to Run Docker Safely
+
+**Option 1: Explicit Localhost Binding (Recommended)**
+```bash
+# SAFE - Only accessible from your machine
+docker run -p 127.0.0.1:3000:3000 mcp-server
+              ↑
+              └── Explicitly bind to localhost only
+```
+
+**Option 2: Use Docker Networks (Most Secure)**
+```bash
+# SAFE - Internal Docker network only, no external ports
+docker network create mcp-network
+docker run --network mcp-network --name mcp-server mcp-server
+docker run --network mcp-network my-app
+# Containers can talk to each other, but no external access
+```
+
+**Option 3: Unix Domain Sockets**
+```bash
+# SAFE - Filesystem-based communication
+docker run -v /tmp:/tmp mcp-server --socket /tmp/mcp.sock
+# No network exposure at all
+```
+
+#### How to Check If You're Currently Exposed
+
+```bash
+# Check what's listening on port 3000
+netstat -an | grep 3000
+# OR
+ss -tulpn | grep 3000
+
+# If you see this, you're EXPOSED:
+tcp    0.0.0.0:3000    *:*    LISTEN  # BAD - listening on all interfaces
+
+# If you see this, you're SAFE:
+tcp    127.0.0.1:3000  *:*    LISTEN  # GOOD - localhost only
+```
+
+#### Scan for Exposed Services
+```bash
+# Check from external perspective
+nmap your-public-ip
+# If port 3000 shows up, you're exposed!
+
+# Check Docker port mappings
+docker port container-name
+# Shows all port mappings for container
+```
+
+#### Common Dangerous Misunderstandings
+
+1. **"It's just Docker, it's contained"**
+   - Docker doesn't add security by default
+   - `-p` flag explicitly breaks container isolation
+
+2. **"I'm behind NAT/firewall"**
+   - NAT isn't a security boundary
+   - Many routers have UPnP that auto-opens ports
+   - Docker can modify firewall rules automatically
+
+3. **"It's just for development/testing"**
+   - Attackers continuously scan for development services
+   - Test servers often have weaker security
+   - "Temporary" often becomes permanent
+
+4. **"My cloud provider protects me"**
+   - Most cloud instances have public IPs
+   - Security groups/firewalls must be explicitly configured
+   - Default configurations often allow wide access
+
+#### Docker Security Best Practices
+
+**1. Never Use Default Port Binding in Production**
+```bash
+# NEVER do this in production:
+docker run -p 3000:3000 app
+
+# Always specify bind address:
+docker run -p 127.0.0.1:3000:3000 app
+```
+
+**2. Use Docker Networks for Inter-Container Communication**
+```bash
+# Create isolated network
+docker network create --driver bridge app-network
+
+# Run containers on network
+docker run --network app-network api-server
+docker run --network app-network database
+# No external ports needed!
+```
+
+**3. Implement Reverse Proxy Pattern**
+```bash
+# Only expose reverse proxy (nginx, traefik)
+docker run -p 127.0.0.1:80:80 nginx
+docker run --network internal-network app1
+docker run --network internal-network app2
+# Apps not directly accessible from outside
+```
+
+**4. Use Environment-Specific Configurations**
+```yaml
+# docker-compose.yml
+version: '3'
+services:
+  mcp-server:
+    # Development
+    ports:
+      - "127.0.0.1:3000:3000"  # Safe local binding
+    # Production
+    networks:
+      - internal  # No external ports
+```
+
+#### Firewall Interaction Warning
+
+Docker manipulates iptables rules automatically:
+```bash
+# Docker adds rules that can bypass your firewall!
+# Check what Docker added:
+iptables -L DOCKER
+
+# Docker rules often come BEFORE your custom rules
+# Your firewall config might be ignored!
+```
+
+#### The Bottom Line
+
+**`docker run -p 3000:3000` is equivalent to running a public web server.** It tells Docker to accept connections from **anywhere on the internet** and forward them to your container. Unless you explicitly specify `127.0.0.1`, Docker assumes you want global accessibility.
+
+This is why:
+- Stdio mode is preferred for MCP servers (no network at all)
+- If ports are needed, always bind to `127.0.0.1:port`
+- Never omit the bind address in production
+- Use Docker networks for internal communication
+- Regularly audit your exposed ports with `netstat` or `nmap`
+
+**Remember: Convenience is the enemy of security. Always be explicit about network exposure.**
+
 ## Key Takeaways
 
 ### Semtools
