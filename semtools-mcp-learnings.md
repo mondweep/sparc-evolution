@@ -92,23 +92,23 @@ search --help
 
 ### Practical Examples Performed
 
-#### Example 1: Parsing the Adesso PDF
+#### Example 1: Parsing the CompanyA PDF
 **Command Used:**
 ```bash
-parse "adesso - Intro H2 2024.pdf"
+parse "CompanyA - Intro H2 2024.pdf"
 ```
 
-**Result:** Successfully parsed to `/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md`
+**Result:** Successfully parsed to `/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md`
 
 **Sample Parsed Content:**
 ```markdown
-# INTRODUCTION ADESSO UK  
+# INTRODUCTION COMPANYA UK  
 ## THE COMPANY AND PORTFOLIO AT A GLANCE
 
-## ADESSO | AT A GLANCE
+## COMPANYA | AT A GLANCE
 
 > We specialise in creating software for a wide range of industries and technologies, actively playing a part in the digitisation of Europe.  
-> With a dedicated team of over **10,000 EMPLOYEES** (adesso Group | Feb. 2024) across Europe, we have recently broadened our scope to include the UK market, starting just one year ago.
+> With a dedicated team of over **10,000 EMPLOYEES** (CompanyA Group | Feb. 2024) across Europe, we have recently broadened our scope to include the UK market, starting just one year ago.
 
 ## GROUP REVENUE 2023
 - approx. **1.1 B. Euros**
@@ -123,18 +123,18 @@ parse "adesso - Intro H2 2024.pdf"
 #### Example 2: Semantic Search for Awards
 **Command Used:**
 ```bash
-search "awards achievements recognition excellence" "/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md"
+search "awards achievements recognition excellence" "/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md"
 ```
 
 **Results Found:**
 ```
-/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md:446::453 (0.4192522861034296)
+/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md:446::453 (0.4192522861034296)
 ## Awards shown on trophies
 
 - Beste Arbeitgeber ITK  
   Great Place To Work 2020  
 
-/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md:27::34 (0.639156086580848)
+/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md:27::34 (0.639156086580848)
 ## NUMEROUS AWARDS
 
 | Year | Award / Recognition                          |
@@ -145,36 +145,36 @@ search "awards achievements recognition excellence" "/Users/mondweep/.parse/ades
 #### Example 3: Financial Performance Search
 **Command Used:**
 ```bash
-search "1.1 billion euros revenue" "/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md" --top-k 5
+search "1.1 billion euros revenue" "/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md" --top-k 5
 ```
 
 **Results Found:**
 ```
-/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md:21::28 (0.5080750291633499)
+/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md:21::28 (0.5080750291633499)
 ## GROUP REVENUE 2023
 - approx. **1.1 B. Euros**
 
-/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md:10::17 (0.7265656264502557)
-> With a dedicated team of over **10,000 EMPLOYEES** (adesso Group | Feb. 2024) across Europe, we have recently broadened our scope to include the UK market, starting just one year ago.
+/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md:10::17 (0.7265656264502557)
+> With a dedicated team of over **10,000 EMPLOYEES** (CompanyA Group | Feb. 2024) across Europe, we have recently broadened our scope to include the UK market, starting just one year ago.
 ```
 
 #### Example 4: Company Positioning Search
 **Command Used:**
 ```bash
-search "speed boat agility flexibility enterprise scalability" "/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md" -n 5
+search "speed boat agility flexibility enterprise scalability" "/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md" -n 5
 ```
 
 **Key Result Found:**
 ```
-/Users/mondweep/.parse/adesso - Intro H2 2024.pdf.md:183::194 (0.4164071779051679)
-> adesso combines the professionalism and scalability of a large IT company with the agility and flexibility of a small IT service provider and thus offers you ...
+/Users/mondweep/.parse/CompanyA - Intro H2 2024.pdf.md:183::194 (0.4164071779051679)
+> CompanyA combines the professionalism and scalability of a large IT company with the agility and flexibility of a small IT service provider and thus offers you ...
 
 > * ...a pronounced **service provider mentality**!  
 > * ...solution-oriented services with optimal **benefits**!  
 > * ...pragmatic, **fast solutions** and hands-on mentality!  
 > * ...a very high service quality designed for **speed**!  
 > * ...extraordinary **flexibility** in cooperation!
-> * ...fast and variable **scalability** in the services - both OnShore and with adesso SmartShore!
+> * ...fast and variable **scalability** in the services - both OnShore and with CompanyA SmartShore!
 
 **WE JUST DO IT!**
 ```
@@ -182,7 +182,7 @@ search "speed boat agility flexibility enterprise scalability" "/Users/mondweep/
 ### Key Discoveries from Parsed Content
 
 **Company Overview:**
-- Founded 1997 in Germany, became adesso SE in 2019
+- Founded 1997 in Germany, became CompanyA SE in 2019
 - Over 10,000 employees across Europe
 - €1.1 billion revenue (2023)
 - 64 locations in Europe & UK
